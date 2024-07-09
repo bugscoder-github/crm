@@ -11,7 +11,7 @@ class LeadService
     public static function getLastUserIdByCustomerId($customer_id)
     {
         return Lead::where("fkcustomer_id", $customer_id)
-            ->orderBy("created_at", "desc")
+            ->orderBy("lead_createdAt", "desc")
             ->first()->user_id ?? 0;
     }
 

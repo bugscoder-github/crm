@@ -13,7 +13,7 @@ class LeadController extends Controller {
     public function index() {
         $leads = Lead::selectRaw('leads.*, users.name')->leftJoin("users", function ($join) {
             $join->on("users.id", "=", "leads.user_id");
-        })->orderByRaw("DATE(leads.lead_createdAt) desc");
+        })->orderBy('lead_id', 'desc');
         if (!isAdmin()) {
             $leads = $leads->where("user_id", "=", auth()->user()->id);
         }

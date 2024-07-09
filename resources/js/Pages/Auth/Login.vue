@@ -90,5 +90,10 @@ const submit = () => {
                 </PrimaryButton>
             </div>
         </form>
+
+        admin: admin@gmail.com / password<br>
+        sales: sales@gmail.com / password<br>
+        if after login never redirect you to inside page, refresh page. not sure why it happen like that.
+        need alex help to debug for this.
     </GuestLayout>
 </template>

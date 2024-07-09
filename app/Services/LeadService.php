@@ -43,7 +43,7 @@ class LeadService
             "lead_isOldCustomer" => $isOldCustomer,
             "fkcustomer_id" => $customerId,
             "user_id" => $oldUserId,
-            "lead_createdBy" => me()->id,
+            "lead_createdBy" => (auth()->check() && request()->routeIs("lead.store")) ? me()->id : 0,
         ]);
 
         //create lead

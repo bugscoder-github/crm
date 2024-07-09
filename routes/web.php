@@ -43,11 +43,11 @@ Route::get('/debug', function() {
 Route::get('/',  [ContactUsController::class, 'contactUsCreate'])->name('contactus.create');
 Route::post('/', [ContactUsController::class, 'contactUsStore'])->name('contactus.store');
 Route::prefix('_backend')->middleware(['auth', 'verified'])->group(function () {
+    Route::get('/', function () { })->middleware(BackendRedirect::class);
+
     Route::get('dashboard', function () {
     	return Inertia::render('Dashboard');
     })->name('dashboard');
-
-    Route::get('/', function () { })->middleware(BackendRedirect::class);
 	
     Route::resources(['user' => UserController::class]);
     Route::resources(['quotation' => QuotationController::class]);

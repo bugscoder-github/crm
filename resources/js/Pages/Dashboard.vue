@@ -18,6 +18,8 @@ ul li.ok {
 
     <AuthenticatedLayout>
         <template #header>Dashboard</template>
+
+		{{$page.props.auth.user}}
         Pending dashboard layout
         <div>---</div>
         <div>TODO</div>

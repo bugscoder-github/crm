@@ -43,7 +43,7 @@ Route::get('/debug', function() {
 Route::get('/',  [ContactUsController::class, 'contactUsCreate'])->name('contactus.create');
 Route::post('/', [ContactUsController::class, 'contactUsStore'])->name('contactus.store');
 Route::prefix('_backend')->middleware(['auth', 'verified'])->group(function () {
-    Route::get('/dashboard', function () {
+    Route::get('dashboard', function () {
     	return Inertia::render('Dashboard');
     })->name('dashboard');
 

@@ -13,8 +13,9 @@ class RolesSeeder extends Seeder
      * Run the database seeds.
      */
     public function run(): void {
-        $role_admin = Role::create(['name' => 'admin']);
-        $role_normal = Role::create(['name' => 'normal']);
+        $role_admin = Role::create(['name' => 'Admin']);
+        $role_sales = Role::create(['name' => 'Sales']);
+        $role_service = Role::create(['name' => 'Service']);
 
         $permission_read = Permission::create(['name' => 'read']);
         $permission_edit = Permission::create(['name' => 'edit']);

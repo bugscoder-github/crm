@@ -18,7 +18,7 @@ class BackendRedirect
     {
     	if (Auth::check()) {
     		// $isLogin = true;
-    		return redirect()->route('dashboard');
+    		return redirect()->secure(route('dashboard'));
     	} else {
     		return redirect()->route('login');
     	}

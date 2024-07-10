@@ -10,6 +10,7 @@ import { Link, Head } from "@inertiajs/vue3";
         <template #header>Quotation List</template>
 
         changes here
+        another changes here
 
         <div class="card">
             <div class="card-header">

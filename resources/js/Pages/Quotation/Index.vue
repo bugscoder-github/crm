@@ -11,7 +11,7 @@ import { Link, Head } from "@inertiajs/vue3";
 
         changes here 34444444
         another changes here
-        changes here 101
+        changes here 101ASDSADSADsdfsd
 
         <div class="card">
             <div class="card-header">

@@ -9,7 +9,7 @@ import { Link, Head } from "@inertiajs/vue3";
     <AuthenticatedLayout>
         <template #header>Quotation List</template>
 
-        changes here
+        changes here 34444444
         another changes here
 
         <div class="card">

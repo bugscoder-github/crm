@@ -16,7 +16,7 @@ import { Link, Head } from "@inertiajs/vue3";
 
             </div>
             <div class="card-footer clearfix">
-
+                <!-- Some Comment -->
             </div>
         </div>
     </AuthenticatedLayout>

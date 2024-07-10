@@ -42,6 +42,13 @@ class CustomerController extends Controller {
 	public function save(CustomerRequest $request, Customer $customer = null) {
 		$data = $request->validated();
 
+		// Customer::updateOrCreate(
+		// 	[
+		// 		'id' => '1',
+		// 	],
+		// 	['email_verified' => 0]
+		// );
+
 		if ($customer) {
 			$customer->update([
 				'customer_name' => $data['customer_name'],

@@ -22,12 +22,17 @@ class QuotationController extends Controller
 	 * Show the form for creating a new resource.
 	 */
 	public function create() {
-		// dd(Lead::where('lead_id', request()->get('lead_id', 0))->get());
-		$lead = Lead::where('lead_id', request()->get('lead_id', 0))->firstOrFail();
-		return Inertia::render("Quotation/Form", [
-			'lead' => $lead,
-		]);
+		return $this->renderForm();
 	}
+
+	/**
+	 * Show the form for editing the specified resource.
+	 */
+	public function edit(Quotation $quotation) {
+		return $this->renderForm($quotation);
+	}
+
+	//
 
 	/**
 	 * Store a newly created resource in storage.
@@ -48,26 +53,16 @@ class QuotationController extends Controller
 	}
 
 	/**
-	 * Display the specified resource.
-	 */
-	public function show(Quotation $quotation)
-	{
-		//
-	}
-
-	/**
-	 * Show the form for editing the specified resource.
-	 */
-	public function edit(Quotation $quotation)
-	{
-		//
-	}
-
-	/**
 	 * Update the specified resource in storage.
 	 */
-	public function update(Request $request, Quotation $quotation)
-	{
+	public function update(QuotationRequest $request, Quotation $quotation) {
+		//
+	}
+
+	/**
+	 * Display the specified resource.
+	 */
+	public function show(Quotation $quotation) {
 		//
 	}
 
@@ -78,4 +73,22 @@ class QuotationController extends Controller
 	{
 		//
 	}
+
+	//
+
+	public function renderForm(Quotation $quotation = null) {
+		$lead = [];
+		if ($quotation == null) {
+			$lead = Lead::where('lead_id', request()->get('lead_id', 0))->firstOrFail();
+		}
+
+		return Inertia::render("Quotation/Form", [
+			"quotation" => $quotation != null ? $quotation : new Quotation(),
+			"lead" => $lead
+		]);
+	}
+	
+    public function save(QuotationRequest $request, Quotation $quotation = null) {
+		
+    }
 }

@@ -61,10 +61,9 @@ class LeadController extends Controller {
         return $this->renderForm($lead);
     }
 
-    public function renderForm(Lead $lead = null)
-    {
-    return Inertia::render("Lead/Form", [
-        "lead" => $lead != null ? $lead : new Lead(),
+    public function renderForm(Lead $lead = null) {
+        return Inertia::render("Lead/Form", [
+            "lead" => $lead != null ? $lead : new Lead(),
             "users" => isAdmin() ? User::all() : [me()],
             "meta" => [
                 // "users" => isAdmin() ? User::all() : [me()],
@@ -96,8 +95,7 @@ class LeadController extends Controller {
             ->with("success", "Lead updated successfully.");
     }
 
-    public function save(LeadRequest $request, Lead $lead = null)
-    {
+    public function save(LeadRequest $request, Lead $lead = null) {
         $data = $request->validated();
 
         if ($lead) {

@@ -38,6 +38,8 @@ function doneClass(x = null) {
 				</div> -->
             </div>
             <div class="card-body table-responsive p-0">
+
+                <!-- {{leads}} -->
                 <table class="table table-hover text-nowrap">
                     <thead>
                         <tr>
@@ -64,6 +66,7 @@ function doneClass(x = null) {
                                 <div class="badge bg-warning" v-if="x.lead_status == 1">Pending</div>
                                 <div class="badge bg-success" v-if="x.lead_status == 2">WIP</div>
                                 <div class="badge bg-gray"    v-if="x.lead_status == 3">Done</div>
+                                <br><small v-if="x.quotation_id"><Link :href="route('quotation.edit', x.quotation_id)">Quote #{{x.quotation_id}}</Link></small>
                             </td>
                             <td>
                             	{{ TimeToString(x.lead_createdAt) }}

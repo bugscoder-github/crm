@@ -9,6 +9,8 @@ import { Link, Head } from "@inertiajs/vue3";
     <AuthenticatedLayout>
         <template #header>Quotation List</template>
 
+        changes here
+
         <div class="card">
             <div class="card-header">
             </div>

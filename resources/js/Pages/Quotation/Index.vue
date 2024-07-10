@@ -13,10 +13,10 @@ import { Link, Head } from "@inertiajs/vue3";
             <div class="card-header">
             </div>
             <div class="card-body table-responsive p-0">
-
+                <!-- Another Comment -->
             </div>
             <div class="card-footer clearfix">
-                <!-- Some Comment -->
+                <!-- Another Comment -->
             </div>
         </div>
     </AuthenticatedLayout>

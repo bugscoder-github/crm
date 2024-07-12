@@ -32,7 +32,7 @@
     </php>
     <coverage>
         <report>
-            <html outputDirectory="tests/Reports/coverage" lowUpperBound="50" highUpperBound="50"/>
+            <html outputDirectory="tests/Reports/coverage" lowUpperBound="50" highLowerBound="50"/>
         </report>
     </coverage>
     

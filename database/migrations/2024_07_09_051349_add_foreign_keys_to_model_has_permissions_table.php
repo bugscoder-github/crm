@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('model_has_permissions', function (Blueprint $table) {
-            $table->dropForeign();
+            $table->dropForeign('permission_id');
         });
     }
 };

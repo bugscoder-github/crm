@@ -12,9 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('model_has_permissions', function (Blueprint $table) {
-            $table->integer('permission_id');
+            $table->unsignedInteger('permission_id');
             $table->string('model_type');
-            $table->integer('model_id');
+            $table->unsignedInteger('model_id');
 
             $table->index(['model_id', 'model_type']);
             $table->primary(['permission_id', 'model_id', 'model_type']);

@@ -30,7 +30,7 @@ class LeadController extends Controller {
     public function edit(Lead $lead) {
         if (isMine($lead->user_id) && $lead->read_at == null) {
             $lead->update(["read_at" => now()]);
-            LeadService::sysCreateComment($lead->lead_id, "Lead read by assigned person");
+            LeadService::leadLog($lead->lead_id, "Lead read by assigned person");
         }
 
         $lead["comment"] = LeadComment::orderBy('leadComment_id', 'desc')->where("lead_id", $lead->lead_id)->get();
@@ -127,6 +127,13 @@ class LeadController extends Controller {
 		$result = Lead::findOrFail($leadId);
         if ($result == false) { return; }
 		$result->update(['done_at' => now()]);
-        LeadService::sysCreateComment($leadId, "Lead marked as done.");
+        LeadService::leadLog($leadId, "Lead marked as done.");
+	}
+
+    public function leadReopen($leadId) {
+		$result = Lead::findOrFail($leadId);
+        if ($result == false) { return; }
+		$result->update(['done_at' => null]);
+        LeadService::leadLog($leadId, "Lead reopened.");
 	}
 }

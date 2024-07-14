@@ -35,7 +35,7 @@
 	pointer-events: none;
 }
 
-#done_btn {
+.done_btn {
 	border: 0;
 	background: none;
 	color: #0056b3;
@@ -198,27 +198,6 @@
 						<div class="card">
 							<div class="card-header">
 								<span class="card-title">Follow Up</span>
-								<ul class="nav nav-pills ml-auto" style="float: right;">
-									<li class="nav-item mr-2">
-										<Link :href="route('quotation.create')" :data="{lead_id: props.lead.lead_id}" v-if="props.lead.lead_id && !props.lead.quotation_id">Create Quotation</Link>
-										<a :href="route('quotation.edit', props.lead.quotation_id)" v-else>Quotation # {{ props.lead.quotation_id }}</a>
-									</li>
-									<li class="mr-2">&nbsp;|&nbsp;</li>
-                  					<li class="nav-item">
-                       					<Link v-if="props.lead.lead_status != 3" id="done_btn" method="post" as="button" onclick="return confirm('Are you sure?')" :href="route('lead.done', props.lead.lead_id)">Mark as Done</Link>
-                            			<div v-else>Done</div>
-                            		</li>
-                  <!-- <li class="nav-item dropdown">
-                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Action <span class="caret"></span></a>
-                    <div class="dropdown-menu">
-                      <a class="dropdown-item" tabindex="-1" href="#">Action</a>
-                      <a class="dropdown-item" tabindex="-1" href="#">Another action</a>
-                      <a class="dropdown-item" tabindex="-1" href="#">Something else here</a>
-                      <div class="dropdown-divider"></div>
-                      <a class="dropdown-item" tabindex="-1" href="#">Separated link</a>
-                    </div>
-                  </li> -->
-                </ul>
 							</div>
 							<form @submit.prevent="handleCommentSubmit">
 								<div class="card-body">
@@ -250,7 +229,28 @@
 										</div>
 									</div>
 								</div>
-								<div class="card-footer"></div>
+								<div class="card-footer">
+								<ul class="nav nav-pills ml-auto" style="float: right;">
+									<li class="nav-item mr-2">
+										<Link :href="route('quotation.create')" :data="{lead_id: props.lead.lead_id}" v-if="props.lead.lead_id && !props.lead.quotation_id">Create Quotation</Link>
+										<a :href="route('quotation.edit', props.lead.quotation_id)" v-else>Quotation # {{ props.lead.quotation_id }}</a>
+									</li>
+									<li class="mr-2">&nbsp;|&nbsp;</li>
+                  					<li class="nav-item">
+                       					<Link v-if="props.lead.lead_status != 3" class="done_btn" method="post" as="button" onclick="return confirm('Are you sure?')" :href="route('lead.done', props.lead.lead_id)">Mark as Done</Link>
+                            			<div v-else>Done ( <Link method="post" class="done_btn" as="button" onclick="return confirm('Are you sure?')" :href="route('lead.reopen', props.lead.lead_id)">Reopen</Link> )</div>
+                            		</li>
+                  <!-- <li class="nav-item dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Action <span class="caret"></span></a>
+                    <div class="dropdown-menu">
+                      <a class="dropdown-item" tabindex="-1" href="#">Action</a>
+                      <a class="dropdown-item" tabindex="-1" href="#">Another action</a>
+                      <a class="dropdown-item" tabindex="-1" href="#">Something else here</a>
+                      <div class="dropdown-divider"></div>
+                      <a class="dropdown-item" tabindex="-1" href="#">Separated link</a>
+                    </div>
+                  </li> -->
+                </ul></div>
 							</form>
 						</div>
 					</div>

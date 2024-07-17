@@ -61,6 +61,8 @@
 			</template>
 		</div>
 
+		<!-- {{  props.log }} -->
+
 		<section class="content">
 			<div class="container-fluid">
 				<div class="row">
@@ -316,7 +318,7 @@ import { ref } from "vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Link, useForm, Head } from "@inertiajs/vue3";
 
-const props = defineProps(["lead", "success", "meta", "users"]);
+const props = defineProps(["lead", "success", "meta", "users", "log"]);
 const form = useForm({
 	customerQuery: '',
 	customer_id: props.lead?.customer_id ?? 0,

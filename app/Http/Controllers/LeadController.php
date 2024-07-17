@@ -9,6 +9,8 @@ use App\Http\Requests\LeadRequest;
 use App\Services\LeadService;
 use Inertia\Inertia;
 
+use Spatie\Activitylog\Models\Activity;
+
 class LeadController extends Controller {
     public function index() {
         $leads = Lead::selectRaw('leads.*, users.name')->leftJoin("users", function ($join) {
@@ -63,6 +65,7 @@ class LeadController extends Controller {
 
     public function renderForm(Lead $lead = null) {
         return Inertia::render("Lead/Form", [
+            "log" => Activity::where("log_name", "lead")->get(),
             "lead" => $lead != null ? $lead : new Lead(),
             "users" => isAdmin() ? User::all() : [me()],
             "meta" => [

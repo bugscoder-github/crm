@@ -6,16 +6,18 @@ use App\Http\Requests\QuotationRequest;
 use App\Models\Quotation;
 use APp\Models\Lead;
 use App\Models\LeadComment;
+use App\Models\QuotationItems;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
-class QuotationController extends Controller
-{
+class QuotationController extends Controller {
 	/**
 	 * Display a listing of the resource.
 	 */
 	public function index() {
-		return Inertia::render("Quotation/Index", []);
+		return Inertia::render("Quotation/Index", [
+			"quotation" => Quotation::orderBy('quotation_id', 'desc')->get()
+		]);
 	}
 
 	/**
@@ -32,38 +34,83 @@ class QuotationController extends Controller
 		return $this->renderForm($quotation);
 	}
 
+	/**
+	 * Display the specified resource.
+	 */
+	public function show(Quotation $quotation) {
+		//
+	}
+
+	public function renderForm(Quotation $quotation = null) {
+		if ($quotation == null) { $quotation = new Quotation(); }
+		if ($quotation->quotation_id == null && request()->get('lead_id') != null) {
+			$lead = Lead::where('lead_id', request()->get('lead_id', 0))->firstOrFail();
+		}
+
+		return Inertia::render("Quotation/Form", [
+			"quotation" => $quotation,
+			"quotation_items" => QuotationItems::where("quotation_id", $quotation->quotation_id)->get(),
+			"lead" => $lead ?? [],
+			"success" => session("success") ?? "",
+		]);
+	}
+
 	//
 
 	/**
 	 * Store a newly created resource in storage.
 	 */
 	public function store(QuotationRequest $request) {
-		$data = $request->validated();
+		$result = $this->save($request);
 
-		$result = Quotation::create($data);
-		if (isset($data['lead_id'])) {
-			Lead::where('lead_id', $data['lead_id'])->update([
+		if ($result->lead_id != null) {
+			Lead::where('lead_id', $result->lead_id)->update([
 				'quotation_id' => $result->quotation_id
 			]);
-			LeadComment::create([
-				'lead_id' => $data['lead_id'],
-				'leadComment_comment' => "Quotation #{$result->quotation_id} created.",
-			]);
 		}
+
+        return $this->goto($result->quotation_id, "Quotation created succesfully.");
 	}
 
 	/**
 	 * Update the specified resource in storage.
 	 */
 	public function update(QuotationRequest $request, Quotation $quotation) {
-		//
+		$result = $this->save($request, $quotation);
+
+        return $this->goto($result->quotation_id, "Quotation updated succesfully.");
 	}
 
-	/**
-	 * Display the specified resource.
-	 */
-	public function show(Quotation $quotation) {
-		//
+	public function save(QuotationRequest $request, Quotation $quotation = null) {
+		$data = $request->validated();
+		$basic = collect($data)->except('quotation_items')->toArray();
+		$items = $data['quotation_items'];
+		
+		if ($quotation == null) {
+			$quotation = Quotation::create($basic);
+			$quotation->items()->createMany($items);
+		} else {
+			$quotation->update($basic);
+			
+			//Delete item that is not in data[quotation_item]
+			$dataItemId = array_filter(array_column($items, 'quotationItem_id'));
+			QuotationItems::where('quotation_id', $quotation->quotation_id)->whereNotIn('quotationItem_id', $dataItemId)->delete();
+			
+			foreach($items as $key => $value) {
+				$value['quotation_id'] = $quotation->quotation_id;
+				if ($value['quotationItem_id'] == 0) { unset($value['quotationItem_id']); }
+				QuotationItems::upsert($value, ["quotationItem_id"]);
+			}
+		}
+
+		return $quotation;
+	}
+
+	public function goto($id, $message) {
+        return redirect()
+            ->route("quotation.edit", $id)
+            ->withInput()
+            ->with("success", $message);
 	}
 
 	/**
@@ -73,22 +120,4 @@ class QuotationController extends Controller
 	{
 		//
 	}
-
-	//
-
-	public function renderForm(Quotation $quotation = null) {
-		$lead = [];
-		if ($quotation == null) {
-			$lead = Lead::where('lead_id', request()->get('lead_id', 0))->firstOrFail();
-		}
-
-		return Inertia::render("Quotation/Form", [
-			"quotation" => $quotation != null ? $quotation : new Quotation(),
-			"lead" => $lead
-		]);
-	}
-	
-    public function save(QuotationRequest $request, Quotation $quotation = null) {
-		
-    }
 }

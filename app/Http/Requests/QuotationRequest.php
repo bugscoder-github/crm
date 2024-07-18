@@ -20,10 +20,21 @@ class QuotationRequest extends FormRequest
 	 * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
 	 */
 	public function rules(): array {
-		return [
+		$rules = [
 			"lead_id" => [],
 			"quotation_name" => [],
 			"quotation_phone" => [],
+            // 'quotation_items' => ['array'],
+            'quotation_items.*.quotationItem_desc' => [],
+            'quotation_items.*.quotationItem_ppu' => [],
+            'quotation_items.*.quotationItem_qty' => [],
+            'quotation_items.*.quotationItem_total' => [],
 		];
+
+        if ($this->isMethod('put')) {
+            $rules['quotation_items.*.quotationItem_id'] = 'sometimes|exists:quotation_items,quotationItem_id';
+        }
+		
+		return $rules;
 	}
 }

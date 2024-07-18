@@ -260,9 +260,10 @@
 				<div class="row">
 					TODO:
 						<ol>
+							<li>show activity log</li>
 							<li>salesperson may pick from unassigned pool</li>
 							<li>salesperson may accept/reject lead</li>
-							<li>reopen Done Status</li>
+							<!-- <li>reopen Done Status</li> -->
 							<!-- <li>salesperson able to choose existing customer</li> -->
 							<!-- <li>Customer extra information, full address, terms</li> -->
 							<!-- <li>unable to edit/delete once it's marked as done</li> -->

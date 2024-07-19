@@ -89,18 +89,15 @@ class QuotationController extends Controller {
 		if ($quotation == null) { $quotation = new Quotation(); }
 		$quotation = Quotation::updateOrCreate(['quotation_id' => $quotation->quotation_id], $basic);
 		
-		if ($quotation == null) {
-			$quotation->items()->createMany($items);
-		} else {
-			//Delete item that is not in data[quotation_item]
-			$dataItemId = array_filter(array_column($items, 'quotationItem_id'));
-			QuotationItems::where('quotation_id', $quotation->quotation_id)->whereNotIn('quotationItem_id', $dataItemId)->delete();
-			
-			foreach($items as $key => $value) {
-				$value['quotation_id'] = $quotation->quotation_id;
-				if (isset($value['quotationItem_id']) && $value['quotationItem_id'] == 0) { unset($value['quotationItem_id']); }
-				QuotationItems::upsert($value, ["quotationItem_id"]);
-			}
+		//Delete item that is not in data[quotation_item]
+		$dataItemId = array_filter(array_column($items, 'quotationItem_id'));
+		QuotationItems::where('quotation_id', $quotation->quotation_id)->whereNotIn('quotationItem_id', $dataItemId)->delete();
+		
+		foreach($items as $key => $value) {
+			$value['quotation_id'] = $quotation->quotation_id;
+			if (isset($value['quotationItem_id']) && $value['quotationItem_id'] == 0) { $value['quotationItem_id'] = null; }
+			if (!isset($value['quotationItem_id'])) { $value['quotationItem_id'] = null; }
+			QuotationItems::updateOrCreate(['quotationItem_id'=> $value['quotationItem_id']], $value);
 		}
 
 		return $quotation;

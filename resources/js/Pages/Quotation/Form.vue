@@ -8,7 +8,7 @@ const emptyItem = [
 ];
 
 const props = defineProps(['lead', 'quotation', 'quotation_items', 'success']);
-const form = useForm({
+let form = useForm({
 	lead_id: props.lead?.lead_id ?? props.quotation?.lead_id ?? 0,
 	quotation_name: props.lead?.lead_name ?? props.quotation?.quotation_name ?? '',
 	quotation_phone: props.lead?.lead_phone ?? props.quotation?.quotation_phone ?? '',
@@ -23,11 +23,29 @@ const form = useForm({
 
 const handleSubmit = () => {
 	if (props.quotation?.quotation_id) {
-		form.put(route('quotation.update', props.quotation.quotation_id));
+		form.put(route('quotation.update', props.quotation.quotation_id), {
+			onSuccess: () => {
+				updateQuotationItems();
+			}
+		});
 	} else {
-		form.post(route('quotation.store'));
-	}
+		form.post(route('quotation.store'), {
+			onSuccess: () => {
+				updateQuotationItems();
+			}
+		});
+	};
 };
+
+const updateQuotationItems = () => {
+	form.quotation_items = props.quotation_items?.length > 0 ? props.quotation_items?.map(x => ({
+		quotationItem_id:    x.quotationItem_id,
+		quotationItem_desc:  x.quotationItem_desc,
+		quotationItem_ppu:   x.quotationItem_ppu,
+		quotationItem_qty:   x.quotationItem_qty,
+		quotationItem_total: x.quotationItem_total
+	})) : emptyItem;
+}
 
 const addItem = () => {
     form.quotation_items.push(emptyItem[0]);
@@ -58,6 +76,8 @@ const removeItem = (index) => {
 					<input id="lead_phone" v-model="form.quotation_phone"><br>
 
 				<div>
+
+					{{ form.quotation_items }}
 
 
 					<label class="col-md-3">Item Name</label>

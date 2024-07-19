@@ -77,8 +77,6 @@ const removeItem = (index) => {
 
 				<div>
 
-					{{ form.quotation_items }}
-
 
 					<label class="col-md-3">Item Name</label>
                 <label class="col-md-3">PPU</label>

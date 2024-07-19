@@ -85,20 +85,20 @@ class QuotationController extends Controller {
 		$data = $request->validated();
 		$basic = collect($data)->except('quotation_items')->toArray();
 		$items = $data['quotation_items'];
+
+		if ($quotation == null) { $quotation = new Quotation(); }
+		$quotation = Quotation::updateOrCreate(['quotation_id' => $quotation->quotation_id], $basic);
 		
 		if ($quotation == null) {
-			$quotation = Quotation::create($basic);
 			$quotation->items()->createMany($items);
 		} else {
-			$quotation->update($basic);
-			
 			//Delete item that is not in data[quotation_item]
 			$dataItemId = array_filter(array_column($items, 'quotationItem_id'));
 			QuotationItems::where('quotation_id', $quotation->quotation_id)->whereNotIn('quotationItem_id', $dataItemId)->delete();
 			
 			foreach($items as $key => $value) {
 				$value['quotation_id'] = $quotation->quotation_id;
-				if ($value['quotationItem_id'] == 0) { unset($value['quotationItem_id']); }
+				if (isset($value['quotationItem_id']) && $value['quotationItem_id'] == 0) { unset($value['quotationItem_id']); }
 				QuotationItems::upsert($value, ["quotationItem_id"]);
 			}
 		}

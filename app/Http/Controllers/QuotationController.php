@@ -97,8 +97,8 @@ class QuotationController extends Controller {
 			if (empty($value['quotationItem_desc'])) { continue; }
 
 			$value['quotation_id'] = $quotation->quotation_id;
-			if (isset($value['quotationItem_id']) && $value['quotationItem_id'] == 0) { $value['quotationItem_id'] = null; }
 			if (!isset($value['quotationItem_id'])) { $value['quotationItem_id'] = null; }
+			if ($value['quotationItem_id'] == 0)    { $value['quotationItem_id'] = null; }
 
 			QuotationItems::updateOrCreate(['quotationItem_id'=> $value['quotationItem_id']], $value);
 		}

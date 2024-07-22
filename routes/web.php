@@ -16,9 +16,8 @@ use App\Http\Middleware\BackendRedirect;
 
 Route::get('/debug', function() {
 	return Inertia::render('debug', [
-		// 'config' => config('custom'),
-		// 'roles' => getRoles(),
-		// 'userlist' => User::getUserWithRole()
+		'content' => file_get_contents(base_path('README.md')),
+		// 'content' => 'sdf'
 	]);
 });
 

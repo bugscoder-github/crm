@@ -65,7 +65,7 @@ class LeadController extends Controller {
 
     public function renderForm(Lead $lead = null) {
         return Inertia::render("Lead/Form", [
-            "log" => Activity::where("log_name", "lead")->get(),
+            "log" => Activity::whereRaw("log_name = 'lead' and subject_id = '{$lead->lead_id}'")->get(),
             "lead" => $lead != null ? $lead : new Lead(),
             "users" => isAdmin() ? User::all() : [me()],
             "meta" => [
@@ -130,13 +130,13 @@ class LeadController extends Controller {
 		$result = Lead::findOrFail($leadId);
         if ($result == false) { return; }
 		$result->update(['done_at' => now()]);
-        LeadService::leadLog($leadId, "Lead marked as done.");
+        // LeadService::leadLog($leadId, "Lead marked as done.");
 	}
 
     public function leadReopen($leadId) {
 		$result = Lead::findOrFail($leadId);
         if ($result == false) { return; }
 		$result->update(['done_at' => null]);
-        LeadService::leadLog($leadId, "Lead reopened.");
+        // LeadService::leadLog($leadId, "Lead reopened.");
 	}
 }

@@ -1,7 +1,7 @@
 <script setup>
-import { onMounted } from "vue";
+import { ref } from "vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { Link, useForm, Head } from "@inertiajs/vue3";
+import { useForm, Head } from "@inertiajs/vue3";
 
 const emptyItem = [
     { quotationItem_id: 0, quotationItem_desc: '', quotationItem_ppu: 1, quotationItem_qty: 0, quotationItem_total: 0 },
@@ -9,6 +9,7 @@ const emptyItem = [
 
 const props = defineProps(['lead', 'quotation', 'quotation_items', 'success']);
 let form = useForm({
+	prodServiceQuery: '',
 	lead_id: props.lead?.lead_id ?? props.quotation?.lead_id ?? 0,
 	quotation_company: props.lead?.lead_companyName ?? props.quotation?.quotation_company ?? '',
 	quotation_premiseType: props.lead?.lead_premiseType ?? props.quotation?.quotation_premiseType ?? '',
@@ -59,6 +60,46 @@ const addItem = () => {
 const removeItem = (index) => {
     form.quotation_items.splice(index, 1);
 };
+
+const prodServiceResult = ref([]);
+const searchProdService = () => {
+	prodServiceResult.value = [];
+	axios.get(route('prodService.search'), {
+		params: { query: form.prodServiceQuery }
+	}).then(response => {
+		prodServiceResult.value = response.data;
+		// console.log(prodServiceResult.value);
+	}).catch(error => {
+		console.error('There was an error fetching the prodService:', error);
+	});
+};
+
+const selectProdService = () => {
+	$(".prodService_ind").each(function() {
+		var $this = $(this);
+		if ($this.prop('checked')) {
+			let data = $this.attr('data');
+
+			form.quotation_items.push({
+				quotationItem_id: 0,
+				prodService_id: prodServiceResult.value[data].productService_id,
+				quotationItem_desc: prodServiceResult.value[data].productService_desc,
+				quotationItem_ppu: prodServiceResult.value[data].productService_ppu,
+				quotationItem_qty: 1,
+				quotationItem_total: prodServiceResult.value[data].productService_ppu
+			});
+		}
+	});
+
+	prodServiceResult.value = [];
+	$("#modal-default").modal("hide");
+};
+
+const disabledExist = (x) => {
+	if ($(".prodService_id[data='"+x+"']").length > 0) {
+		return ' disabled';
+	}
+};
 </script>
 <template>
 	<Head title="Members" />
@@ -107,14 +148,14 @@ const removeItem = (index) => {
 												<span class="text-danger" v-if="form.errors.quotation_premiseType" >{{ form.errors.quotation_premiseType }}</span >
 											</div>
 										</div>
-										<div class="col-sm-4">
+										<div class="col-sm-6">
 											<div class="form-group">
 												<label for="lead_name">Name</label>
 												<input type="text" class="form-control" id="lead_name" placeholder="Name" v-model="form.quotation_name">
 												<span class="text-danger" v-if="form.errors.quotation_name" >{{ form.errors.quotation_name }}</span >
 											</div>
 										</div>
-										<div class="col-sm-4">
+										<div class="col-sm-2">
 											<div class="form-group">
 												<label for="lead_phone">Phone</label>
 												<input type="text" class="form-control" id="lead_phone" placeholder="Phone" v-model="form.quotation_phone">
@@ -171,13 +212,16 @@ const removeItem = (index) => {
                 <label class="col-md-3">Price</label>
 					<div v-for="(item, index) in form.quotation_items" :key="index">
 						<input type="hidden" v-model="item.quotationItem_id">
-						<input type="text"   class="col-md-3" v-model="item.quotationItem_desc">
-						<input type="number" class="col-md-3" v-model="item.quotationItem_qty">
+						<input type="hidden" class="prodService_id" :data="item.prodService_id">
+						<textarea v-model="item.quotationItem_desc"></textarea>
 						<input type="number" class="col-md-3" v-model="item.quotationItem_ppu">
+						<input type="number" class="col-md-3" v-model="item.quotationItem_qty">
 						<input type="number" class="col-md-3" v-model="item.quotationItem_total">
 						<button @click.prevent="removeItem(index)">Remove</button>
 					</div>
 					<button @click.prevent="addItem">Add Item</button><br>
+
+					<div data-toggle="modal" data-target="#modal-default" style="cursor: pointer;">Search Item</div>
 				</div>
 					
 					<button type="submit" class="btn btn-info">
@@ -187,5 +231,43 @@ const removeItem = (index) => {
 			</div>
 		</div>
 		</section>
+
+		<div class="modal fade" id="modal-default">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Default Modal</h4>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              
+				<div class="mb-3">
+        <label for="prodServiceSearch">Search Product/Service</label>
+        <input type="text" id="prodServiceSearch" v-model="form.prodServiceQuery" class="form-control" placeholder="Type to search...">
+		<input type="button" @click="searchProdService" value="Search">
+		{{ prodServiceResult.length }}
+        <ul class="list-group mt-2">
+          <li v-for="(x, y) in prodServiceResult" :data="y" class="list-group-item">
+            <input type="checkbox" class="prodService_ind" :data="y" :disabled="disabledExist(x.productService_id)">{{ x.productService_desc }}
+          </li>
+        </ul>
+      </div>
+              <!-- <ul v-if="customerResults.length" class="list-group mt-2">
+                <li v-for="customer in customerResults" :key="customer.id" class="list-group-item" @click="selectCustomer(customer)">
+                  {{ customer.name }} ({{ customer.email }})
+                </li>
+              </ul> -->
+            </div>
+            <div class="modal-footer justify-content-between">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary" @click="selectProdService()">Select</button>
+            </div>
+          </div>
+          <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+      </div>
 	</AuthenticatedLayout>
 </template>

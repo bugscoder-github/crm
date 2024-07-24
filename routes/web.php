@@ -7,6 +7,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\LeadController;
 use App\Http\Controllers\LeadCommentController;
 use App\Http\Controllers\MetadataController;
+use App\Http\Controllers\ProductServiceController;
 use App\Http\Controllers\QuotationController;
 // use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -54,6 +55,9 @@ Route::prefix('_backend')->middleware(['auth', 'verified'])->group(function () {
 
 	Route::get('customer/search', [CustomerController::class, 'search'])->name('customer.search');
     Route::resources(['customer' => CustomerController::class]);
+
+	Route::get('prodService/search', [ProductServiceController::class, 'search'])->name('prodService.search');
+    Route::resources(['prodService' => ProductServiceController::class]);
 
     Route::resources(['lead' => LeadController::class]);
 	Route::resources(['lead.comment' => LeadCommentController::class]);

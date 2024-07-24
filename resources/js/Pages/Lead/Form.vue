@@ -386,7 +386,7 @@ const searchCustomer = () => {
 		params: { query: form.customerQuery }
 	}).then(response => {
 		customerResult.value = response.data;
-		console.log(customerResult.value);
+		// console.log(customerResult.value);
 	}).catch(error => {
 		console.error('There was an error fetching the customer:', error);
 	});

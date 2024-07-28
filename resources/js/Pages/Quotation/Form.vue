@@ -93,6 +93,13 @@ const selectProdService = () => {
 
 	prodServiceResult.value = [];
 	$("#modal-default").modal("hide");
+	$('#modal-default').on('hidden.bs.modal', function (e) {	
+		$("textarea").each(function() {
+			$(this).height($(this).prop("scrollHeight"));
+		});
+	});
+	// $("textarea").height($(this).prop(scrollHeight));
+	// resizeTextArea($("textarea"));
 };
 
 const disabledExist = (x) => {
@@ -120,8 +127,8 @@ const disabledExist = (x) => {
 			<div class="container-fluid">
 
 				<div class="row">
-					<form @submit.prevent="handleSubmit">
 						<div class="col-md-12">
+							<form @submit.prevent="handleSubmit">
 							<div class="card">
 								<div class="card-header">
 									Basic Information
@@ -197,37 +204,50 @@ const disabledExist = (x) => {
 							</div>
 							<div class="card">
 								<div class="card-header">
-									Basic Information
+									Items
 									<div style="float: right">
 										<!-- <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-default" style="float: right;">Search Customer</button> -->
 									</div>
 									
 								</div>
+
+
+								<div class="card-body">
+									<div class="row form-group">
+										<div class="col-6">Item Name</div>
+										<div class="col-2">Unit Price</div>
+										<div class="col-1">Quantity</div>
+										<div class="col-2">Price</div>
+										<div class="col-1"></div>
+									</div>
+									<div class="row form-group" v-for="(item, index) in form.quotation_items" :key="index">
+										<input type="hidden" v-model="item.quotationItem_id">
+										<input type="hidden" class="prodService_id" :data="item.prodService_id">
+										<div class="col-6">
+											<textarea v-model="item.quotationItem_desc" class="form-control"></textarea>
+										</div>
+										<div class="col-2">
+											<input type="number" class="form-control" v-model="item.quotationItem_ppu">
+										</div>
+										<div class="col-1">
+											<input type="number" class="form-control" v-model="item.quotationItem_qty">
+										</div>
+										<div class="col-2">
+											<input type="text" class="form-control" v-model="item.quotationItem_total">
+										</div>
+										<div class="col-1"><button @click.prevent="removeItem(index)">Remove</button></div>
+									</div>
+									<div class="row form-group">
+										<button @click.prevent="addItem">Add Item</button><br>
+										<div data-toggle="modal" data-target="#modal-default" style="cursor: pointer;">Search Item</div>
+									</div>
+								</div>
 							</div><br>
-
-
-					<label class="col-md-3">Item Name</label>
-                <label class="col-md-3">PPU</label>
-                <label class="col-md-3">Quantity</label>
-                <label class="col-md-3">Price</label>
-					<div v-for="(item, index) in form.quotation_items" :key="index">
-						<input type="hidden" v-model="item.quotationItem_id">
-						<input type="hidden" class="prodService_id" :data="item.prodService_id">
-						<textarea v-model="item.quotationItem_desc"></textarea>
-						<input type="number" class="col-md-3" v-model="item.quotationItem_ppu">
-						<input type="number" class="col-md-3" v-model="item.quotationItem_qty">
-						<input type="number" class="col-md-3" v-model="item.quotationItem_total">
-						<button @click.prevent="removeItem(index)">Remove</button>
-					</div>
-					<button @click.prevent="addItem">Add Item</button><br>
-
-					<div data-toggle="modal" data-target="#modal-default" style="cursor: pointer;">Search Item</div>
-				</div>
-					
 					<button type="submit" class="btn btn-info">
 						Create
 					</button>
-				</form>
+					</form>
+				</div>
 			</div>
 		</div>
 		</section>

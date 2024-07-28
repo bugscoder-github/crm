@@ -1,5 +1,11 @@
 export default {
+  mounted() {
+    // this.resizeTextArea($("textarea"));
+  },
   methods: {
+    resizeTextArea: function (element) {
+      return element.height(element.scrollHeight);
+    },
     TimeToString: function (timestamp) {
       return moment(timestamp).format("DD MMM, YYYY HH:mm");
     },

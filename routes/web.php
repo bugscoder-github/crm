@@ -51,6 +51,8 @@ Route::prefix('_backend')->middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
 	
     Route::resources(['user' => UserController::class]);
+
+    Route::get('quotation/pdf', [QuotationController::class, 'pdf'])->name('quotation.pdf');
     Route::resources(['quotation' => QuotationController::class]);
 
 	Route::get('customer/search', [CustomerController::class, 'search'])->name('customer.search');

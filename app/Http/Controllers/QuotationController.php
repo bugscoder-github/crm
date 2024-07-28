@@ -10,6 +10,8 @@ use App\Models\QuotationItems;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
+use Barryvdh\DomPDF\Facade\Pdf;
+
 class QuotationController extends Controller {
 	/**
 	 * Display a listing of the resource.
@@ -119,5 +121,11 @@ class QuotationController extends Controller {
 	public function destroy(Quotation $quotation)
 	{
 		//
+	}
+
+	function pdf() {
+        $data = ['title' => 'Welcome to PDF generation with Laravel, Vue 3, and Inertia'];
+        $pdf = PDF::loadView('pdf.quotation', $data);
+        return $pdf->download('myPDF.pdf');
 	}
 }

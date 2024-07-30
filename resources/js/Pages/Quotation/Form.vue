@@ -186,7 +186,7 @@ const disabledExist = (x) => {
 										</div>
 									</div>
 									<div class="form-group row">
-										<label for="lead_companyName" class="col-sm-2 col-form-label">Billing Address</label >
+										<label for="lead_companyName" class="col-sm-2 col-form-label">Billing Address</label>
 										<div class="col-sm-10">
 											<input type="text" class="form-control" id="lead_companyName" placeholder="Billing Address" v-model="form.quotation_billingAddress" />
 											<span class="text-danger" v-if="form.errors.quotation_billingAddress" >{{ form.errors.quotation_billingAddress }}</span >
@@ -214,16 +214,16 @@ const disabledExist = (x) => {
 
 								<div class="card-body">
 									<div class="row form-group">
-										<div class="col-6">Item Name</div>
-										<div class="col-2">Unit Price</div>
-										<div class="col-1">Quantity</div>
-										<div class="col-2">Price</div>
+										<div class="col-7">Item Name</div>
+										<div class="col-2 text-center">Unit Price</div>
+										<div class="col-1 text-center">Quantity</div>
+										<div class="col-1 text-center">Price</div>
 										<div class="col-1"></div>
 									</div>
 									<div class="row form-group" v-for="(item, index) in form.quotation_items" :key="index">
 										<input type="hidden" v-model="item.quotationItem_id">
 										<input type="hidden" class="prodService_id" :data="item.prodService_id">
-										<div class="col-6">
+										<div class="col-7">
 											<textarea v-model="item.quotationItem_desc" class="form-control"></textarea>
 										</div>
 										<div class="col-2">
@@ -232,10 +232,24 @@ const disabledExist = (x) => {
 										<div class="col-1">
 											<input type="number" class="form-control" v-model="item.quotationItem_qty">
 										</div>
-										<div class="col-2">
-											<input type="text" class="form-control" v-model="item.quotationItem_total">
-										</div>
-										<div class="col-1"><button @click.prevent="removeItem(index)">Remove</button></div>
+										<div class="col-1 col-form-label text-right">{{ item.quotationItem_total }}</div>
+										<div class="col-1"><button @click.prevent="removeItem(index)" class="btn btn-sm bg-danger"><i class="fas fa-times"></i></button></div>
+										<!-- <div class="col-4">
+											<div class="row form-group">
+												<div class="col-9">
+													<input type="number" class="form-control" v-model="item.quotationItem_ppu">
+												</div>
+												<div class="col-3">
+													<input type="number" class="form-control" v-model="item.quotationItem_qty">
+												</div>
+											</div>
+											<div class="row">
+												<div class="col-4">
+													Total: {{ item.quotationItem_total }}
+												</div>
+												<div class="col-1"><button @click.prevent="removeItem(index)">Remove</button></div>
+											</div>
+										</div> -->
 									</div>
 									<div class="row form-group">
 										<button @click.prevent="addItem">Add Item</button><br>

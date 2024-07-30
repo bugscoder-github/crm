@@ -123,8 +123,8 @@ class QuotationController extends Controller {
 		//
 	}
 
-	function pdf() {
-        $data = ['title' => 'Welcome to PDF generation with Laravel, Vue 3, and Inertia'];
+	function pdf($id) {
+        $data = ['title' => 'Welcome to PDF generation with Laravel, Vue 3, and Inertia', 'id' => $id];
         $pdf = PDF::loadView('pdf.quotation', $data);
         return $pdf->download('myPDF.pdf');
 	}

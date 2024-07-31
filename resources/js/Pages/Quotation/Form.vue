@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { useForm, Head } from "@inertiajs/vue3";
 
@@ -18,6 +18,8 @@ let form = useForm({
 	quotation_email: props.lead?.lead_email ?? props.quotation?.quotation_email ?? '',
 	quotation_deliveryAddress: props.lead?.lead_location ?? props.quotation?.quotation_deliveryAddress ?? '',
 	quotation_billingAddress: props.quotation?.quotation_billingAddress ?? '',
+	quotation_tnc: props.quotation?.quotation_tnc ?? '',
+	quotation_remark: props.quotation?.quotation_remark ?? '',
 	quotation_items: props.quotation_items?.length > 0 ? props.quotation_items?.map(x => ({
 		quotationItem_id:    x.quotationItem_id,
 		quotationItem_desc:  x.quotationItem_desc,
@@ -53,6 +55,23 @@ const updateQuotationItems = () => {
 	})) : emptyItem;
 }
 
+let ppuTotal = 0, qtyTotal = 0, subTotal = 0, sst = 0, grandTotal = 0;
+const calcTotal = () => {
+	ppuTotal = 0; qtyTotal = 0; subTotal = 0; sst = 0; grandTotal = 0;
+
+	for (let x in form.quotation_items) {
+		let thisTotal = form.quotation_items[x].quotationItem_ppu;
+		let thisQty   = form.quotation_items[x].quotationItem_qty;
+		ppuTotal   += thisTotal;
+		qtyTotal   += thisQty;
+		subTotal   += (thisTotal * thisQty);
+	}
+
+	sst = subTotal*(0.8);
+	grandTotal = subTotal + sst;
+}
+calcTotal();
+
 const addItem = () => {
     form.quotation_items.push(emptyItem[0]);
 };
@@ -71,6 +90,12 @@ const searchProdService = () => {
 		// console.log(prodServiceResult.value);
 	}).catch(error => {
 		console.error('There was an error fetching the prodService:', error);
+	});
+};
+
+const textareaHeightAuto = () => {
+	$("textarea").each(function() {
+		$(this).height($(this).prop("scrollHeight"));
 	});
 };
 
@@ -94,9 +119,8 @@ const selectProdService = () => {
 	prodServiceResult.value = [];
 	$("#modal-default").modal("hide");
 	$('#modal-default').on('hidden.bs.modal', function (e) {	
-		$("textarea").each(function() {
-			$(this).height($(this).prop("scrollHeight"));
-		});
+		textareaHeightAuto();
+		calcTotal();
 	});
 	// $("textarea").height($(this).prop(scrollHeight));
 	// resizeTextArea($("textarea"));
@@ -107,6 +131,14 @@ const disabledExist = (x) => {
 		return ' disabled';
 	}
 };
+
+onMounted(() => {
+	$('#modal-default').on('show.bs.modal', function (e) {	
+		searchProdService();
+	});
+
+	textareaHeightAuto();
+});
 </script>
 <template>
 	<Head title="Members" />
@@ -215,9 +247,9 @@ const disabledExist = (x) => {
 								<div class="card-body">
 									<div class="row form-group">
 										<div class="col-7">Item Name</div>
-										<div class="col-2 text-center">Unit Price</div>
-										<div class="col-1 text-center">Quantity</div>
-										<div class="col-1 text-center">Price</div>
+										<div class="col-2 text-center">Per Service</div>
+										<div class="col-1 text-center">Frequency</div>
+										<div class="col-1 text-center">Amount</div>
 										<div class="col-1"></div>
 									</div>
 									<div class="row form-group" v-for="(item, index) in form.quotation_items" :key="index">
@@ -227,10 +259,10 @@ const disabledExist = (x) => {
 											<textarea v-model="item.quotationItem_desc" class="form-control"></textarea>
 										</div>
 										<div class="col-2">
-											<input type="number" class="form-control" v-model="item.quotationItem_ppu">
+											<input type="number" class="form-control text-right" v-model="item.quotationItem_ppu">
 										</div>
 										<div class="col-1">
-											<input type="number" class="form-control" v-model="item.quotationItem_qty">
+											<input type="number" class="form-control text-right" v-model="item.quotationItem_qty">
 										</div>
 										<div class="col-1 col-form-label text-right">{{ item.quotationItem_total }}</div>
 										<div class="col-1"><button @click.prevent="removeItem(index)" class="btn btn-sm bg-danger"><i class="fas fa-times"></i></button></div>
@@ -252,14 +284,69 @@ const disabledExist = (x) => {
 										</div> -->
 									</div>
 									<div class="row form-group">
+										<div class="col-7"></div>
+										<div class="col-2 text-right">{{ ppuTotal }}</div>
+										<div class="col-1 text-right">{{ qtyTotal }}</div>
+										<div class="col-1 text-right">{{  subTotal }}</div>
+										<div class="col-1"></div>
+									</div>
+									<div class="odd row form-group">
+										<div class="col-7"></div>
+										<div class="col-3 text-right p-0">Subtotal (RM)</div>
+										<div class="col-1 text-right p-0">{{  subTotal }}</div>
+										<div class="col-1"></div>
+									</div>
+									<div class="odd row form-group">
+										<div class="col-7"></div>
+										<div class="col-3 text-right p-0">8% SST</div>
+										<div class="col-1 text-right p-0">{{  sst }}</div>
+										<div class="col-1"></div>
+									</div>
+									<div class="odd row form-group">
+										<div class="col-7"></div>
+										<div class="col-3 text-right p-0">Total Amount (RM)</div>
+										<div class="col-1 text-right p-0">{{  grandTotal }}</div>
+										<div class="col-1"></div>
+									</div>
+									<div class="row form-group">
 										<button @click.prevent="addItem">Add Item</button><br>
 										<div data-toggle="modal" data-target="#modal-default" style="cursor: pointer;">Search Item</div>
 									</div>
 								</div>
-							</div><br>
-					<button type="submit" class="btn btn-info">
-						Create
-					</button>
+							</div>
+							<div class="card">
+								<div class="card-header">
+									Basic Information
+									<div style="float: right">
+										<!-- <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-default" style="float: right;">Search Customer</button> -->
+									</div>
+									
+								</div>
+
+								<div class="card-body">
+									<div class="row">
+										<div class="col-sm-12">
+											<div class="form-group">
+												<label for="quotation_remark">Remark</label>
+												 <textarea v-model="form.quotation_remark" class="form-control"></textarea>
+												<span class="text-danger" v-if="form.errors.quotation_remark" >{{ form.errors.quotation_remark }}</span >
+											</div>
+										</div>
+										<div class="col-sm-12">
+											<div class="form-group">
+												<label for="quotation_tnc">Terms and Condition</label>
+												<textarea v-model="form.quotation_tnc" class="form-control"></textarea>
+												<span class="text-danger" v-if="form.errors.quotation_tnc" >{{ form.errors.quotation_tnc }}</span >
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							
+							<button type="submit" class="btn btn-info">
+								Create
+							</button>
+							<div class="card"></div>
 					</form>
 				</div>
 			</div>

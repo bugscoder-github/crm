@@ -5,9 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\QuotationRequest;
 use App\Models\Quotation;
 use APp\Models\Lead;
-use App\Models\LeadComment;
 use App\Models\QuotationItems;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -53,7 +51,7 @@ class QuotationController extends Controller {
 			"quotation" => $quotation,
 			"quotation_items" => QuotationItems::where("quotation_id", $quotation->quotation_id)->get(),
 			"lead" => $lead ?? [],
-			"success" => session("success") ?? "",
+			"success" => session("success") ?? ""
 		]);
 	}
 
@@ -95,6 +93,7 @@ class QuotationController extends Controller {
 		$dataItemId = array_filter(array_column($items, 'quotationItem_id'));
 		QuotationItems::where('quotation_id', $quotation->quotation_id)->whereNotIn('quotationItem_id', $dataItemId)->delete();
 		
+		$total = 0;
 		foreach($items as $key => $value) {
 			if (empty($value['quotationItem_desc'])) { continue; }
 
@@ -102,8 +101,17 @@ class QuotationController extends Controller {
 			if (!isset($value['quotationItem_id'])) { $value['quotationItem_id'] = null; }
 			if ($value['quotationItem_id'] == 0)    { $value['quotationItem_id'] = null; }
 
+			$value['quotationItem_total'] = ($value['quotationItem_ppu'] * $value['quotationItem_qty']);
+			$total += $value['quotationItem_total'];
+
 			QuotationItems::updateOrCreate(['quotationItem_id'=> $value['quotationItem_id']], $value);
 		}
+
+		$quotation->update([
+			'quotation_total' => $total,
+			'quotation_sst' => $total*0.08,
+			'quotation_grandTotal' => $total*1.08
+		]);
 
 		return $quotation;
 	}

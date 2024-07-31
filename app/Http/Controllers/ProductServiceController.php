@@ -66,8 +66,13 @@ class ProductServiceController extends Controller
 
 	public function search(Request $request) {
         $query = $request->input('query');
-		
-		$result = ProductService::where('productService_desc', 'like', '%'.$query.'%')->get();
+        $result = [];
+        if (empty($query)) {
+            $result = ProductService::all();
+        } else {
+            $result = ProductService::where('productService_desc', 'like', '%'.$query.'%')->get();
+        }
+        
 		return $result;
 	}
 }

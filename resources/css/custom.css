@@ -40,3 +40,20 @@ h1 small:after  { content: ' ]'; }
 	margin: 0;
 	margin-bottom: 2px;
 }
+
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.odd {
+	background-color: rgba(0,0,0,.05);
+	padding: 0.5rem;
+}

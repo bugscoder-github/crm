@@ -29,11 +29,12 @@ class QuotationRequest extends FormRequest
 			"quotation_email" => [],
 			"quotation_deliveryAddress" => [],
 			"quotation_billingAddress" => [],
+			"quotation_tnc" => [],
+			'quotation_remark' => [],
             // 'quotation_items' => ['array'],
             'quotation_items.*.quotationItem_desc' => [],
             'quotation_items.*.quotationItem_ppu' => [],
             'quotation_items.*.quotationItem_qty' => [],
-            'quotation_items.*.quotationItem_total' => [],
 		];
 
         if ($this->isMethod('put')) {

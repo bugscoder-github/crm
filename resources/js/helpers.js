@@ -4,7 +4,7 @@ export default {
       return moment(timestamp).format("DD MMM, YYYY HH:mm");
     },
     isAdmin: function (t) {
-      return t.props.auth.user.role_names.includes("Admin");
+      return t.props.isAdmin;
     },
     isMine: function (t, id) {
       return t.props.auth.user.id == id;

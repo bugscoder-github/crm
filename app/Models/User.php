@@ -5,21 +5,18 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+
+use Laratrust\Contracts\LaratrustUser;
+use Laratrust\Traits\HasRolesAndPermissions;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
 use App\Models\Lead;
 
-class User extends Authenticatable
+class User extends Authenticatable implements LaratrustUser
 {
-    use SoftDeletes, HasFactory, Notifiable, HasRoles;
-
-    protected $appends = ['role_names'];
-    public function getRoleNamesAttribute() {
-        return $this->roles->pluck('name');
-    }
+    use HasRolesAndPermissions, SoftDeletes, HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -55,13 +52,25 @@ class User extends Authenticatable
         ];
     }
 
+    public function getAllPermissionsAttribute()
+    {
+        return $this->allPermissions();
+    }
+
+    public function isAdmin()
+    {
+        return $this->hasRole('Owner') || $this->hasRole('Admin');
+    }
+
     public function lead(): HasMany {
         return $this->hasMany(Lead::class);
     }
 
     public function getNotificationCount() {
     	$userRel = [$this->id];
-     	if ($this->role_names->contains('Admin')) {
+
+
+     	if ($this->hasRole('Admin') || $this->hasRole('owner')) {
         	array_push($userRel, 0);
         }
     	return Lead::whereIn('user_id', $userRel)->where('read_at', null)->count();

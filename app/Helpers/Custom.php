@@ -21,7 +21,7 @@ if (!function_exists('me')) {
 
 if (!function_exists('isAdmin')) {
 	function isAdmin() {
-		return me()->role_names[0] == 'Admin' ? true : false;
+		return me()->isAdmin();
 	}
 }
 

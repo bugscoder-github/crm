@@ -59,6 +59,7 @@ Route::prefix('_backend')->middleware(['auth', 'verified'])->group(function () {
 	Route::resources(['lead.comment' => LeadCommentController::class]);
 	Route::resources(['leadComment'  => LeadCommentController::class]);
 	Route::post('lead/{id}/done', [LeadController::class, 'leadMarkDone'])->name('lead.done');
+	Route::post('lead/{id}/reopen', [LeadController::class, 'leadReopen'])->name('lead.reopen');
 });
 
 

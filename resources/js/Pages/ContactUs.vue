@@ -1,8 +1,10 @@
 <script setup>
+import { ref } from "vue";
 import GuestLayout from '@/Layouts/GuestLayout.vue';
 import { Link, useForm, Head } from '@inertiajs/vue3';
 
 const props = defineProps(['success']);
+const message = ref([props.success]);
 const form = useForm({
 	lead_name: '',
 	lead_phone: '',
@@ -11,7 +13,13 @@ const form = useForm({
 });
 
 const handleSubmit = () => {
-	form.post(route('contactus.store'), { onSuccess: () => form.reset() });
+	message.value = [];
+	form.post(route('contactus.store'), {
+		onSuccess: () => {
+			form.reset();
+			message.value = props.success;
+		}
+	});
 };
 </script>
 <style>
@@ -43,8 +51,7 @@ main { width: 800px; }
           
           <div class="col-7">
 
-
-          	<div id="alert" class="alert alert-success" v-if="props.success">Thanks for your enquiry! We'll be in touch soon.</div>
+          	<div id="alert" class="alert alert-success" v-if="message[0]">Thanks for your enquiry! We'll be in touch soon.</div>
 
           	
           	<form @submit.prevent="handleSubmit">

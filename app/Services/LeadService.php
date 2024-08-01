@@ -49,7 +49,7 @@ class LeadService
         //create lead
         $result = Lead::create($data);
 
-        self::sysCreateComment($result->lead_id, "New lead created.");
+        self::leadLog($result->lead_id, "New lead created.");
 
         //update customer table src modal
         if ($isOldCustomer == false) {
@@ -63,7 +63,7 @@ class LeadService
         return $result;
     }
 
-    public static function sysCreateComment($lead_id, $comment) {
+    public static function leadLog($lead_id, $comment) {
         LeadComment::create([
             'user_id' => -1,
             'lead_id' => $lead_id,

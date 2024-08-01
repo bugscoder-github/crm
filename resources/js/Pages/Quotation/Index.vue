@@ -20,6 +20,7 @@ const props = defineProps(["quotation"]);
                 <table class="table table-hover text-nowrap">
                     <thead>
                         <tr>
+                            <th>ID</th>
                             <th>Name</th>
                             <th>Amount</th>
                             <th>Created</th>
@@ -29,10 +30,22 @@ const props = defineProps(["quotation"]);
                     </thead>
                     <tbody>
                         <tr v-for="x in quotation" :key="x.quotation_id">
-                            <td>{{ x.quotation_name }}</td>
                             <td>
-                                {{ x.quotation_grandTotal }}
-                                <br><small>{{ x.quotation_total }} ({{ x.quotation_sst }})</small>
+                                <a :href="route('quotation.edit', x.quotation_id)">{{ x.quotation_id }}</a>
+                                <template v-if="x.lead_id"><br><small><a :href="route('lead.edit', x.lead_id)" target="_blank">(Lead: {{ x.lead_id }})</a></small></template>
+                            </td>
+                            <td>
+                                <template v-if="!x.quotation_company">{{ x.quotation_name }}</template>
+                                <template v-else>
+                                    {{ x.quotation_company }}<br>
+                                    (Attn: {{ x.quotation_name }})
+                                </template>
+                                
+
+                            </td>
+                            <td>
+                                {{ amountFormat(x.quotation_grandTotal) }}
+                                <br><small>{{ amountFormat(x.quotation_total) }} ({{ amountFormat(x.quotation_sst) }} @ {{ x.quotation_sstPct }}%)</small>
                             </td>
                             <td>{{ TimeToString(x.created_at) }}</td>
                             <td><a :href="route('quotation.edit', x.quotation_id)">Edit</a></td>

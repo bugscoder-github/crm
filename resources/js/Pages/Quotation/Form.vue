@@ -167,6 +167,11 @@ onMounted(() => {
 
 				<div class="row">
 						<div class="col-md-12">
+
+
+							<div class="callout callout-info" v-if="form.lead_id">
+								Created via <a :href="route('lead.edit', form.lead_id)" target="_blank">Lead #{{ form.lead_id }}</a>
+							</div>
 							<form @submit.prevent="handleSubmit">
 							<div class="card">
 								<div class="card-header">
@@ -336,9 +341,8 @@ onMounted(() => {
 								</div>
 							</div>
 							
-							<button type="submit" class="btn btn-info">
-								Create
-							</button>
+							<button type="submit" class="btn btn-info">Create</button>&nbsp;
+							<a :href="route('quotation.pdf', props.quotation.quotation_id)" v-if="props.quotation?.quotation_id">PDF</a>
 							<div class="card"></div>
 					</form>
 				</div>

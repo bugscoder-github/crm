@@ -21,6 +21,9 @@ export default {
         text => text.charAt(0).toUpperCase() + text.substring(1).toLowerCase()
       );
     },
+    amountFormat: function (amt) {
+      return amt.toFixed(2);
+    },
     jsonDiff: function (newObj, oldObj) {
       const diff = {};
 

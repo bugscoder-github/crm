@@ -57,4 +57,10 @@ if (!function_exists('isMine')) {
 		return false;
 	}
 }
+
+if (!function_exists('amount_format')) {
+	function amount_format($amt) {
+		return number_format($amt, 2, '.', ',');
+	}
+}
 ?>

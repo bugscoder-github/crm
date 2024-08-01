@@ -131,9 +131,32 @@ class QuotationController extends Controller {
 		//
 	}
 
-	function pdf($id) {
-        $data = ['title' => 'Welcome to PDF generation with Laravel, Vue 3, and Inertia', 'id' => $id];
+	function pdf(Quotation $quotation) {
+		$attn = "";
+		$name = $quotation->quotation_name;
+		if (!empty($quotation->quotation_company)) {
+			$attn = $name;
+			$name = $quotation->quotation_company;
+		}
+
+        $data = [
+			"quotation_attn" => $attn,
+			"quotation_name" => $name,
+			"quotation_number" => str_pad((1000+$quotation->quotation_id), 5, "0", STR_PAD_LEFT),
+			"quotation_billingAddress" => $quotation->quotation_billingAddress,
+			"quotation_deliveryAddress" => $quotation->quotation_deliveryAddress,
+			"quotation_phone" => $quotation->quotation_phone,
+			"quotation_email" => $quotation->quotation_email,
+			"quotation_total" => amount_format($quotation->quotation_total),
+			"quotation_sst" => amount_format($quotation->quotation_sst),
+			"quotation_grandTotal" => amount_format($quotation->quotation_grandTotal),
+			"quotation_sstPct" => $quotation->quotation_sstPct,
+			"quotation_remark" => $quotation->quotation_remark,
+			"quotation_tnc" => $quotation->quotation_tnc,
+			"quotation_items" => $quotation->items()->get()
+		];
         $pdf = PDF::loadView('pdf.quotation', $data);
-        return $pdf->download('myPDF.pdf');
+		return $pdf->stream("quotation_{$quotation->quotation_id}.pdf", array("Attachment" => false));
+        // return $pdf->download('myPDF.pdf');
 	}
 }

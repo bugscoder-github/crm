@@ -21,15 +21,22 @@ const props = defineProps(["quotation"]);
                     <thead>
                         <tr>
                             <th>Name</th>
+                            <th>Amount</th>
+                            <th>Created</th>
                             <th>Edit</th>
+                            <th>PDF</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-for="x in quotation" :key="x.quotation_id">
                             <td>{{ x.quotation_name }}</td>
                             <td>
-                                <a :href="route('quotation.edit', x.quotation_id)">Edit</a>&nbsp;
+                                {{ x.quotation_grandTotal }}
+                                <br><small>{{ x.quotation_total }} ({{ x.quotation_sst }})</small>
                             </td>
+                            <td>{{ TimeToString(x.created_at) }}</td>
+                            <td><a :href="route('quotation.edit', x.quotation_id)">Edit</a></td>
+                            <td><a :href="route('quotation.pdf', x.quotation_id)">PDF</a></td>
                         </tr>
                     </tbody>
                 </table>

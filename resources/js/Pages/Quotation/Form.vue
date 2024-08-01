@@ -9,6 +9,7 @@ const emptyItem = [
 
 const props = defineProps(['lead', 'quotation', 'quotation_items', 'success']);
 let form = useForm({
+	quotation_sstPct: props.quotation?.quotation_sstPct ?? 8,
 	prodServiceQuery: '',
 	lead_id: props.lead?.lead_id ?? props.quotation?.lead_id ?? 0,
 	quotation_company: props.lead?.lead_companyName ?? props.quotation?.quotation_company ?? '',
@@ -55,23 +56,6 @@ const updateQuotationItems = () => {
 	})) : emptyItem;
 }
 
-let ppuTotal = 0, qtyTotal = 0, subTotal = 0, sst = 0, grandTotal = 0;
-const calcTotal = () => {
-	ppuTotal = 0; qtyTotal = 0; subTotal = 0; sst = 0; grandTotal = 0;
-
-	for (let x in form.quotation_items) {
-		let thisTotal = form.quotation_items[x].quotationItem_ppu;
-		let thisQty   = form.quotation_items[x].quotationItem_qty;
-		ppuTotal   += thisTotal;
-		qtyTotal   += thisQty;
-		subTotal   += (thisTotal * thisQty);
-	}
-
-	sst = subTotal*(0.8);
-	grandTotal = subTotal + sst;
-}
-calcTotal();
-
 const addItem = () => {
     form.quotation_items.push(emptyItem[0]);
 };
@@ -92,6 +76,27 @@ const searchProdService = () => {
 		console.error('There was an error fetching the prodService:', error);
 	});
 };
+
+let ppuTotal = 0, qtyTotal = 0, subTotal = 0, sst = 0;
+const grandTotal = ref(0);
+const calcTotal = () => {
+	ppuTotal = 0; qtyTotal = 0; subTotal = 0; sst = 0;
+
+	for (let x in form.quotation_items) {
+		let thisTotal = form.quotation_items[x].quotationItem_ppu;
+		let thisQty   = form.quotation_items[x].quotationItem_qty;
+		ppuTotal   += thisTotal;
+		qtyTotal   += thisQty;
+		subTotal   += (thisTotal * thisQty);
+
+		form.quotation_items[x].quotationItem_total = (thisTotal * thisQty);
+	}
+
+	sst = subTotal*(form.quotation_sstPct/100);
+	sst = parseFloat(sst.toFixed(2));
+	grandTotal.value = subTotal + sst;
+}
+calcTotal();
 
 const textareaHeightAuto = () => {
 	$("textarea").each(function() {
@@ -136,6 +141,8 @@ onMounted(() => {
 	$('#modal-default').on('show.bs.modal', function (e) {	
 		searchProdService();
 	});
+
+	$(".reCalc").keyup(calcTotal);
 
 	textareaHeightAuto();
 });
@@ -246,67 +253,53 @@ onMounted(() => {
 
 								<div class="card-body">
 									<div class="row form-group">
+										<div class="col-1"></div>
 										<div class="col-7">Item Name</div>
 										<div class="col-2 text-center">Per Service</div>
 										<div class="col-1 text-center">Frequency</div>
 										<div class="col-1 text-center">Amount</div>
-										<div class="col-1"></div>
 									</div>
 									<div class="row form-group" v-for="(item, index) in form.quotation_items" :key="index">
 										<input type="hidden" v-model="item.quotationItem_id">
 										<input type="hidden" class="prodService_id" :data="item.prodService_id">
+										<div class="col-1"><button @click.prevent="removeItem(index)" class="btn btn-sm bg-danger"><i class="fas fa-times"></i></button></div>
 										<div class="col-7">
 											<textarea v-model="item.quotationItem_desc" class="form-control"></textarea>
 										</div>
 										<div class="col-2">
-											<input type="number" class="form-control text-right" v-model="item.quotationItem_ppu">
+											<input type="number" class="reCalc form-control text-right" v-model="item.quotationItem_ppu">
 										</div>
 										<div class="col-1">
-											<input type="number" class="form-control text-right" v-model="item.quotationItem_qty">
+											<input type="number" class="reCalc form-control text-right" v-model="item.quotationItem_qty">
 										</div>
 										<div class="col-1 col-form-label text-right">{{ item.quotationItem_total }}</div>
-										<div class="col-1"><button @click.prevent="removeItem(index)" class="btn btn-sm bg-danger"><i class="fas fa-times"></i></button></div>
-										<!-- <div class="col-4">
-											<div class="row form-group">
-												<div class="col-9">
-													<input type="number" class="form-control" v-model="item.quotationItem_ppu">
-												</div>
-												<div class="col-3">
-													<input type="number" class="form-control" v-model="item.quotationItem_qty">
-												</div>
-											</div>
-											<div class="row">
-												<div class="col-4">
-													Total: {{ item.quotationItem_total }}
-												</div>
-												<div class="col-1"><button @click.prevent="removeItem(index)">Remove</button></div>
-											</div>
-										</div> -->
 									</div>
 									<div class="row form-group">
+										<div class="col-1"></div>
 										<div class="col-7"></div>
 										<div class="col-2 text-right">{{ ppuTotal }}</div>
 										<div class="col-1 text-right">{{ qtyTotal }}</div>
 										<div class="col-1 text-right">{{  subTotal }}</div>
-										<div class="col-1"></div>
 									</div>
 									<div class="odd row form-group">
+										<div class="col-1"></div>
 										<div class="col-7"></div>
 										<div class="col-3 text-right p-0">Subtotal (RM)</div>
 										<div class="col-1 text-right p-0">{{  subTotal }}</div>
-										<div class="col-1"></div>
 									</div>
 									<div class="odd row form-group">
+										<div class="col-1"></div>
 										<div class="col-7"></div>
-										<div class="col-3 text-right p-0">8% SST</div>
+										<div class="col-3 text-right p-0">
+											<input type="number" class="reCalc text-right col-2" v-model="form.quotation_sstPct"> % SST
+										</div>
 										<div class="col-1 text-right p-0">{{  sst }}</div>
-										<div class="col-1"></div>
 									</div>
 									<div class="odd row form-group">
+										<div class="col-1"></div>
 										<div class="col-7"></div>
 										<div class="col-3 text-right p-0">Total Amount (RM)</div>
-										<div class="col-1 text-right p-0">{{  grandTotal }}</div>
-										<div class="col-1"></div>
+										<div class="col-1 text-right p-0">{{ grandTotal }}</div>
 									</div>
 									<div class="row form-group">
 										<button @click.prevent="addItem">Add Item</button><br>

@@ -109,8 +109,8 @@ class QuotationController extends Controller {
 
 		$quotation->update([
 			'quotation_total' => $total,
-			'quotation_sst' => $total*0.08,
-			'quotation_grandTotal' => $total*1.08
+			'quotation_sst' => $total*($basic['quotation_sstPct']/100),
+			'quotation_grandTotal' => $total*(1+($basic['quotation_sstPct']/100))
 		]);
 
 		return $quotation;

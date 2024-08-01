@@ -31,6 +31,7 @@ class QuotationRequest extends FormRequest
 			"quotation_billingAddress" => [],
 			"quotation_tnc" => [],
 			'quotation_remark' => [],
+			'quotation_sstPct' => [],
             // 'quotation_items' => ['array'],
             'quotation_items.*.quotationItem_desc' => [],
             'quotation_items.*.quotationItem_ppu' => [],

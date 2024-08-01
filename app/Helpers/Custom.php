@@ -7,12 +7,6 @@ if (!function_exists('getConfig')) {
 	}
 }
 
-if (!function_exists('getRoles')) {
-	function getRoles() {
-		return Role::get();
-	}
-}
-
 if (!function_exists('me')) {
 	function me() {
 		return auth()->user();

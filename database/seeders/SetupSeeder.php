@@ -39,18 +39,21 @@ class SetupSeeder extends Seeder
                 'name' => 'Owner',
                 'email' => 'owner@gmail.com',
                 'password' => 'password',
+                'current_team_id' => $team->id,
                 'role' => [$role_owner],
             ],
             [
                 'name' => 'Admin',
                 'email' => 'admin@gmail.com',
                 'password' => 'password',
+                'current_team_id' => $team->id,
                 'role' => [$role_admin],
             ],
             [
                 'name' => 'Sales',
                 'email' => 'sales@gmail.com',
                 'password' => 'password',
+                'current_team_id' => $team->id,
                 'role' => [$role_sales],
             ]
         ];
@@ -59,6 +62,7 @@ class SetupSeeder extends Seeder
             $created_user = User::create([
                 'name' => $user['name'],
                 'email' => $user['email'],
+                'current_team_id' => $user['current_team_id'],
                 'password' => Hash::make($user['password']),
             ]);
 

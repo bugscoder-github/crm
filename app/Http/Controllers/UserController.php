@@ -7,13 +7,14 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
-use Spatie\Permission\Models\Role;
+use App\Models\Role;
 
 class UserController extends Controller {
 	public function index() {
 		if (isAdmin() == false) { abort(403); }
 
-		$users = User::orderByRaw('LOWER(name)')->get();
+		$users = me()->currentTeam()->users()->orderByRaw('LOWER(name)')->get();
+
 		return Inertia::render('User/Index', [
 			'users' => $users
 		]);
@@ -27,6 +28,8 @@ class UserController extends Controller {
 
 	public function edit(User $user) {
 		if (isAdmin() == false && !isMine($user->id)) { abort(403); }
+
+		$user['roles'] = $user->roles()->where('team_id', me()->currentTeam()->id)->first();
 
 		return $this->renderForm($user);
 	}
@@ -56,6 +59,8 @@ class UserController extends Controller {
 	public function save(UserRequest $request, User $user = null) {
 		$data = $request->validated();
 
+		$role = Role::where('id', $data['role'])->firstOrFail();
+
 		if ($user) {
 			$user->update([
 				'name'     => $data['name'],
@@ -63,19 +68,20 @@ class UserController extends Controller {
 				'password' => $data['password'] ? Hash::make($data['password']) : $user->password,
 			]);
 
-			if (auth()->user()->role_names[0] == 'Admin' && Auth()->id() != $user->id) {
-				$user->syncRoles($data['role']);
+			if (me()->isAdmin() && Auth()->id() != $user->id) {
+				$user->syncRoles([$role], me()->currentTeam());
 			}
 		} else {
 			$user = User::create([
 				'name'     => $data['name'],
 				'email'    => $data['email'],
 				'password' => Hash::make($data['password']),
+				'current_team_id' => me()->currentTeam()->id
 			]);
 
 
-			if (auth()->user()->role_names[0] == 'Admin') {
-				$user->assignRole($data['role']);
+			if (me()->isAdmin()) {
+				$user->syncRoles([$role], me()->currentTeam());
 			}
 		}
 

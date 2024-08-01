@@ -6,7 +6,7 @@ const props = defineProps(['user', 'roles', 'success']);
 const form = useForm({
 	name: props.user?.name || '',
 	email: props.user?.email || '',
-	role: props.user?.roles[0]?.id || '',
+	role: props.user?.roles?.id || '',
 	password: '',
 	password_confirmation: ''
 });

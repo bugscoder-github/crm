@@ -57,6 +57,11 @@ class User extends Authenticatable implements LaratrustUser
         return $this->allPermissions();
     }
 
+    public function currentTeam()
+    {
+        return $this->rolesTeams()->where('id', $this->current_team_id)->first();
+    }
+
     public function isAdmin()
     {
         return $this->hasRole('Owner') || $this->hasRole('Admin');

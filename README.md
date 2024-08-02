@@ -59,3 +59,7 @@ TODO:
     ```
     php artisan migrate:generate
     ```
+2. Drop and migrate database
+   ```
+   php artisan migrate:fresh --seed
+   ```

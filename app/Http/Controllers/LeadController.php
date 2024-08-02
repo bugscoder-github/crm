@@ -67,7 +67,7 @@ class LeadController extends Controller {
         $lead = ($lead == null) ? new Lead() : $lead;
 
         return Inertia::render("Lead/Form", [
-            "log" => Activity::whereRaw("log_name = 'lead' and subject_id = '{$lead->lead_id}'")->get(),
+            "log" => $lead->lead_id > 0 ? Activity::whereRaw("log_name = 'lead' and subject_id = '{$lead->lead_id}'")->get() : [],
             "lead" => $lead,
             "users" => isAdmin() ? User::all() : [me()],
             "meta" => [

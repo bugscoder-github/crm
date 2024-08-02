@@ -12,14 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('metadata', function (Blueprint $table) {
-            $table->id('metadata_id');
+            $table->increments('metadata_id');
             $table->integer('parent_id')->nullable();
             $table->string('metadata_type');
             $table->string('metadata_label');
             $table->string('metadata_value');
-            $table->timestamp('metadata_createdAt')->nullable();
-            $table->timestamp('metadata_updatedAt')->nullable();
-            $table->softDeletes();
+            $table->dateTime('metadata_createdAt')->nullable();
+            $table->dateTime('metadata_updatedAt')->nullable();
+            $table->dateTime('deleted_at')->nullable();
         });
     }
 

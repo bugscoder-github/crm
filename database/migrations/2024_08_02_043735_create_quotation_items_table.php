@@ -12,14 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('quotation_items', function (Blueprint $table) {
-            $table->id('quotationItem_id');
+            $table->increments('quotationItem_id');
             $table->integer('quotation_id');
             $table->string('quotationItem_desc');
             $table->integer('quotationItem_ppu');
             $table->integer('quotationItem_qty');
             $table->integer('quotationItem_total');
-            $table->timestamps();
-            $table->softDeletes();
+            $table->dateTime('created_at')->nullable();
+            $table->dateTime('updated_at')->nullable();
+            $table->dateTime('deleted_at')->nullable();
         });
     }
 

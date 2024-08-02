@@ -12,12 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('product_services', function (Blueprint $table) {
-            $table->id('productService_id');
+            $table->increments('productService_id');
             $table->string('productService_type')->nullable();
             $table->string('productService_desc')->nullable();
-            $table->integer('productService_ppu')->default('0');
-            $table->timestamps();
-            $table->softDeletes();
+            $table->integer('productService_ppu')->default(0);
+            $table->dateTime('created_at')->nullable();
+            $table->dateTime('updated_at')->nullable();
+            $table->dateTime('deleted_at')->nullable();
         });
     }
 

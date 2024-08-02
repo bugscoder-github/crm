@@ -40,3 +40,9 @@ TODO:
     * [ ] ```ui``` change dropdown to select2
 
 ---
+
+### Tech Notes
+1. Generate migrate file
+    ```
+    php artisan migrate:generate
+    ```

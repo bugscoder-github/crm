@@ -15,13 +15,6 @@ use Inertia\Inertia;
 
 use App\Http\Middleware\BackendRedirect;
 
-Route::get('/debug', function() {
-	return Inertia::render('debug', [
-		'content' => file_get_contents(base_path('README.md')),
-		// 'content' => 'sdf'
-	]);
-});
-
 // Route::get('/', function () {
 //     return Inertia::render('Welcome', [
 //         'canLogin' => Route::has('login'),
@@ -45,6 +38,12 @@ Route::get('/',  [ContactUsController::class, 'contactUsCreate'])->name('contact
 Route::post('/', [ContactUsController::class, 'contactUsStore'])->name('contactus.store');
 Route::prefix('_backend')->middleware(['auth', 'verified'])->group(function () {
     Route::get('/', function () { })->middleware(BackendRedirect::class);
+
+	Route::get('changelog', function() {
+		return Inertia::render('Changelog', [
+			'content' => file_get_contents(base_path('README.md')),
+		]);
+	});
 
     Route::get('dashboard', function () {
     	return Inertia::render('Dashboard');

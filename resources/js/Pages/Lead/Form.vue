@@ -260,7 +260,7 @@
 				<div class="row">
 					<div class="col-md-12">
 						<div class="card" v-if="props.log?.length > 0">
-							<div class="card-header">Activity Log</div>
+							<div class="card-header">Audit Trail</div>
 							<div class="card-body table-responsive p-0">
 								<table class="table table-hover text-nowrap">
 									<thead>
@@ -279,17 +279,6 @@
 							</div>
 						</div>
 					</div>
-					TODO:
-						<ol>
-							<li>salesperson may pick from unassigned pool</li>
-							<li>salesperson may accept/reject lead</li>
-							<!-- <li>reopen Done Status</li> -->
-							<!-- <li>salesperson able to choose existing customer</li> -->
-							<!-- <li>Customer extra information, full address, terms</li> -->
-							<!-- <li>unable to edit/delete once it's marked as done</li> -->
-							<!-- <li>move leadcomment and lead function in 1 service class</li> -->
-							<!-- <li>lead comment should have web user that cannot be deleted by anyone</li> -->
-						</ol>
 				</div>
 			</div>
 		</section>

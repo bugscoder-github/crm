@@ -8,7 +8,7 @@ const props = defineProps(['content']);
 
 onMounted(() => {
     const script = document.createElement('script');
-    script.src = 'js/showdown.js'; // Path to your external script
+    script.src = '/js/showdown.js'; // Path to your external script
     script.async = true;
     document.body.appendChild(script);
 

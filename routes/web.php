@@ -34,16 +34,16 @@ use App\Http\Middleware\BackendRedirect;
 //     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 // });
 
+Route::get('changelog', function() {
+	return Inertia::render('Changelog', [
+		'content' => file_get_contents(base_path('README.md')),
+	]);
+});
+
 Route::get('/',  [ContactUsController::class, 'contactUsCreate'])->name('contactus.create');
 Route::post('/', [ContactUsController::class, 'contactUsStore'])->name('contactus.store');
 Route::prefix('_backend')->middleware(['auth', 'verified'])->group(function () {
     Route::get('/', function () { })->middleware(BackendRedirect::class);
-
-	Route::get('changelog', function() {
-		return Inertia::render('Changelog', [
-			'content' => file_get_contents(base_path('README.md')),
-		]);
-	});
 
     Route::get('dashboard', function () {
     	return Inertia::render('Dashboard');

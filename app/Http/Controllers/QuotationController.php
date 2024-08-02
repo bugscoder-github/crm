@@ -85,7 +85,7 @@ class QuotationController extends Controller {
 		$data = $request->validated();
 		$basic = collect($data)->except('quotation_items')->toArray();
 		$items = $data['quotation_items'];
-		dd($basic);
+		// dd($basic);
 
 		if ($quotation == null) { $quotation = new Quotation(); }
 		$quotation = Quotation::updateOrCreate(['quotation_id' => $quotation->quotation_id], $basic);

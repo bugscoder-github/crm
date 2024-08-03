@@ -61,6 +61,8 @@
 			</template>
 		</div>
 
+		<!-- {{  props.log }} -->
+
 		<section class="content">
 			<div class="container-fluid">
 				<div class="row">
@@ -256,17 +258,27 @@
 					</div>
 				</div>
 				<div class="row">
-					TODO:
-						<ol>
-							<li>salesperson may pick from unassigned pool</li>
-							<li>salesperson may accept/reject lead</li>
-							<li>reopen Done Status</li>
-							<!-- <li>salesperson able to choose existing customer</li> -->
-							<!-- <li>Customer extra information, full address, terms</li> -->
-							<!-- <li>unable to edit/delete once it's marked as done</li> -->
-							<!-- <li>move leadcomment and lead function in 1 service class</li> -->
-							<!-- <li>lead comment should have web user that cannot be deleted by anyone</li> -->
-						</ol>
+					<div class="col-md-12">
+						<div class="card" v-if="props.log?.length > 0">
+							<div class="card-header">Audit Trail</div>
+							<div class="card-body table-responsive p-0">
+								<table class="table table-hover text-nowrap">
+									<thead>
+										<tr>
+											<th>Date/Time</th>
+											<th>Log</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr v-for="x in props.log">
+											<td class="col-md-2">{{ TimeToString(x.created_at) }}</td>
+												<td v-html="tidyActivityLog(x)"></td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
 		</section>
@@ -316,7 +328,7 @@ import { ref } from "vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Link, useForm, Head } from "@inertiajs/vue3";
 
-const props = defineProps(["lead", "success", "meta", "users"]);
+const props = defineProps(["lead", "success", "meta", "users", "log"]);
 const form = useForm({
 	customerQuery: '',
 	customer_id: props.lead?.customer_id ?? 0,
@@ -363,7 +375,7 @@ const searchCustomer = () => {
 		params: { query: form.customerQuery }
 	}).then(response => {
 		customerResult.value = response.data;
-		console.log(customerResult.value);
+		// console.log(customerResult.value);
 	}).catch(error => {
 		console.error('There was an error fetching the customer:', error);
 	});

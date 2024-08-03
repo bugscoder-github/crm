@@ -9,6 +9,8 @@ use App\Http\Requests\LeadRequest;
 use App\Services\LeadService;
 use Inertia\Inertia;
 
+use Spatie\Activitylog\Models\Activity;
+
 class LeadController extends Controller {
     public function index() {
         $leads = Lead::selectRaw('leads.*, users.name')->leftJoin("users", function ($join) {
@@ -62,8 +64,11 @@ class LeadController extends Controller {
     }
 
     public function renderForm(Lead $lead = null) {
+        $lead = ($lead == null) ? new Lead() : $lead;
+
         return Inertia::render("Lead/Form", [
-            "lead" => $lead != null ? $lead : new Lead(),
+            "log" => $lead->lead_id > 0 ? Activity::whereRaw("log_name = 'lead' and subject_id = '{$lead->lead_id}'")->get() : [],
+            "lead" => $lead,
             "users" => isAdmin() ? User::all() : [me()],
             "meta" => [
                 // "users" => isAdmin() ? User::all() : [me()],
@@ -127,13 +132,13 @@ class LeadController extends Controller {
 		$result = Lead::findOrFail($leadId);
         if ($result == false) { return; }
 		$result->update(['done_at' => now()]);
-        LeadService::leadLog($leadId, "Lead marked as done.");
+        // LeadService::leadLog($leadId, "Lead marked as done.");
 	}
 
     public function leadReopen($leadId) {
 		$result = Lead::findOrFail($leadId);
         if ($result == false) { return; }
 		$result->update(['done_at' => null]);
-        LeadService::leadLog($leadId, "Lead reopened.");
+        // LeadService::leadLog($leadId, "Lead reopened.");
 	}
 }

@@ -49,7 +49,7 @@ class LeadService
         //create lead
         $result = Lead::create($data);
 
-        self::leadLog($result->lead_id, "New lead created.");
+        // self::leadLog($result->lead_id, "New lead created.");
 
         //update customer table src modal
         if ($isOldCustomer == false) {

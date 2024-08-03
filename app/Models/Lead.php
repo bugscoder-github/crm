@@ -6,9 +6,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Lead extends Model
-{
-    use SoftDeletes, HasFactory;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
+
+class Lead extends Model {
+    use SoftDeletes, HasFactory, LogsActivity;
 
     protected $primaryKey = "lead_id";
     const CREATED_AT = "lead_createdAt";
@@ -25,8 +27,11 @@ class Lead extends Model
 
     protected $guarded = [];
 
-    public function user(): BelongsTo
-    {
+    public function user(): BelongsTo {
         return $this->belongsTo(User::class);
+    }
+
+    public function getActivitylogOptions(): LogOptions {
+        return LogOptions::defaults()->useLogName('lead')->logAll();
     }
 }

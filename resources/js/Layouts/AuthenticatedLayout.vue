@@ -24,6 +24,8 @@ const showingNavigationDropdown = ref(false);
       </li>
       <li class="nav-item d-none d-sm-inline-block">
         <a :href="route('contactus.create')" class="nav-link" target="_blank">Contact Us</a>
+      </li><li class="nav-item d-none d-sm-inline-block">
+        <a href="/_backend/changelog" class="nav-link" target="_blank">Changelog</a>
       </li>
       <!-- <li class="nav-item d-none d-sm-inline-block">
         <a href="#" class="nav-link">Contact</a>
@@ -195,6 +197,24 @@ const showingNavigationDropdown = ref(false);
                     </li>
                 </ul>
             </li>
+            <li class="nav-item menu-open">
+                <a href="#" class="nav-link "> <i class="nav-icon fas fa-address-card"></i>
+                    <p>Quotation
+                		<i class="fas fa-angle-left right"></i></p>
+                </a>
+                <ul class="nav nav-treeview">
+                    <li class="nav-item">
+                        <Link :href="route('quotation.index')" class="nav-link ">
+                             <i class="nav-icon fas"></i><p>List</p>
+                        </Link>
+                    </li>
+                    <li class="nav-item">
+                        <Link :href="route('quotation.create')" class="nav-link">
+                             <i class="nav-icon fas"></i><p>New</p>
+                        </Link>
+                    </li>
+                </ul>
+            </li>
           	<li class="nav-item menu-open" v-if="isAdmin($page)">
                 <a href="#" class="nav-link "> <i class="nav-icon fas fa-user"></i>
                     <p>Users
@@ -231,7 +251,6 @@ const showingNavigationDropdown = ref(false);
                     </li>
                 </ul>
             </li>
-
         </ul>
       </nav>
       <!-- /.sidebar-menu -->

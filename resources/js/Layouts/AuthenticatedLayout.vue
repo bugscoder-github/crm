@@ -25,7 +25,7 @@ const showingNavigationDropdown = ref(false);
       <li class="nav-item d-none d-sm-inline-block">
         <a :href="route('contactus.create')" class="nav-link" target="_blank">Contact Us</a>
       </li><li class="nav-item d-none d-sm-inline-block">
-        <a href="/_backend/changelog" class="nav-link" target="_blank">Changelog</a>
+        <a href="/changelog" class="nav-link" target="_blank">Changelog</a>
       </li>
       <!-- <li class="nav-item d-none d-sm-inline-block">
         <a href="#" class="nav-link">Contact</a>

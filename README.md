@@ -1,4 +1,5 @@
 **02 Aug, 2024**
+
 NEW:
 * Quotation
     * Create quotation from lead
@@ -10,13 +11,25 @@ TODO:
 * [ ] Quotation
     * [ ] if quotation created from lead, display lead info on the quotation form as reference
     * [ ] quotation audit trail
+    * [ ] default sst value
+    * [ ] quotation number suffix and prefix
+    * [ ] choose item to be transfered to invoice
 * [ ] Lead
     * [ ]  Beautify audit trail
     * [ ]  Remove activity log from Follow up section (remain inside audit trail only)
 
+NEXT ACTION:
+* [ ]  Invoice
+    * [ ]  Salesperson to generate invoice
+    * [ ]  Admin need to approve for invoice to be generated
+    * [ ]  status
+        * [ ]  service provided
+        * [ ]  paid
+
 ---
 
 **24 Jul, 2024** (via whatsapp)
+
 TODO:
 * [ ] message from whatsapp
 * [ ] new enquiry alert (without refreshing page)
@@ -34,6 +47,7 @@ TODO:
 ---
 
 **11 Jul, 2024**
+
 NEW:
 * Lead Form
 * Contact us Form (public)
@@ -55,6 +69,7 @@ TODO:
 ---
 
 ### Tech Notes
+
 1. Generate migrate file
     ```
     php artisan migrate:generate

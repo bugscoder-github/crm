@@ -25,6 +25,7 @@ NEXT ACTION:
     * [ ]  status
         * [ ]  service provided
         * [ ]  paid
+* [ ]  Admin able to set default value
 
 ---
 

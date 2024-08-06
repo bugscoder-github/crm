@@ -25,6 +25,7 @@
     </style>
 </head>
 <body>
+  
   <img src="{{ public_path('img/logo.png') }}" width="60">
   <table class="table">
     <tr>

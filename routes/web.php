@@ -68,6 +68,9 @@ Route::prefix('_backend')->middleware(['auth', 'verified'])->group(function () {
     Route::resources(['quotation' => QuotationController::class]);
 
     Route::resources(['invoice' => InvoiceController::class]);
+	Route::post('invoice/{invoice}/paid', [InvoiceController::class, 'invoiceMarkPaid'])->name('invoice.paid');
+	Route::post('invoice/{invoice}/approved', [InvoiceController::class, 'invoiceMarkApproved'])->name('invoice.approved');
+	Route::get('invoice/{invoice}/pdf', [InvoiceController::class, 'pdf'])->name('invoice.pdf');
 
 	Route::resources(['metadata' => MetadataController::class]);
 });

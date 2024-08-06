@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { useForm, Head } from "@inertiajs/vue3";
+import { useForm, Head, Link } from "@inertiajs/vue3";
 
 const emptyItem = [
     { invoiceItem_id: 0, invoiceItem_desc: '', invoiceItem_ppu: 1, invoiceItem_qty: 0, invoiceItem_total: 0 },
@@ -166,8 +166,6 @@ onMounted(() => {
 			</template>
 		</div>
 
-		<!-- {{ props.quotation_items }} -->
-
 		<section class="content">
 			<div class="container-fluid">
 
@@ -183,9 +181,14 @@ onMounted(() => {
 								<div class="card-header">
 									Basic Information
 									<div style="float: right">
-										<!-- <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-default" style="float: right;">Search Customer</button> -->
+										<Link v-if="!props.invoice?.invoice_paidAt && props.invoice.invoice_id" class="paid_btn" method="post" as="button" onclick="return confirm('Are you sure?')" :href="route('invoice.paid', props.invoice.invoice_id)">Mark as Paid</Link>
+										<div v-else class="mr-4">Paid: {{ TimeToString(props.invoice.invoice_paidAt) }}</div>
 									</div>
-									
+									<div class="ribbon-wrapper" v-if="props.invoice?.invoice_paidAt">
+										<div class="ribbon bg-success">
+										Paid
+										</div>
+									</div>
 								</div>
 
 								<div class="card-body">
@@ -348,6 +351,8 @@ onMounted(() => {
 							</div>
 							
 							<button type="submit" class="btn btn-info">Create</button>&nbsp;
+							<Link method="post" as="button" v-if="props.invoice.invoice_id && !props.invoice.invoice_approvedBy" :href="route('invoice.approved', props.invoice.invoice_id)">Approve</Link>&nbsp;
+							<a :href="route('invoice.pdf', props.invoice.invoice_id)" v-else>PDF</a>&nbsp;
 							<div class="card"></div>
 					</form>
 				</div>

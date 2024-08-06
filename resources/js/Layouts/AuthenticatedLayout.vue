@@ -215,6 +215,24 @@ const showingNavigationDropdown = ref(false);
                     </li>
                 </ul>
             </li>
+            <li class="nav-item menu-open">
+                <a href="#" class="nav-link "> <i class="nav-icon fas fa-address-card"></i>
+                    <p>Invoice
+                		<i class="fas fa-angle-left right"></i></p>
+                </a>
+                <ul class="nav nav-treeview">
+                    <li class="nav-item">
+                        <Link :href="route('invoice.index')" class="nav-link ">
+                             <i class="nav-icon fas"></i><p>List</p>
+                        </Link>
+                    </li>
+                    <li class="nav-item">
+                        <Link :href="route('invoice.create')" class="nav-link">
+                             <i class="nav-icon fas"></i><p>New</p>
+                        </Link>
+                    </li>
+                </ul>
+            </li>
           	<li class="nav-item menu-open" v-if="isAdmin($page)">
                 <a href="#" class="nav-link "> <i class="nav-icon fas fa-user"></i>
                     <p>Users

@@ -2,18 +2,18 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Link, Head } from "@inertiajs/vue3";
 
-const props = defineProps(["quotation"]);
+const props = defineProps(["invoice"]);
 </script>
 
 <template>
-    <Head title="Leads List" />
+    <Head title="Invoice List" />
 
     <AuthenticatedLayout>
-        <template #header>Quotation List</template>
+        <template #header>Invoice List</template>
 
         <div class="card">
             <div class="card-header">
-                <Link :href="route('quotation.create')" class="btn btn-primary mr-3">New</Link>
+                <Link :href="route('invoice.create')" class="btn btn-primary mr-3">New</Link>
             </div>
             <div class="card-body table-responsive p-0">
                 
@@ -25,31 +25,29 @@ const props = defineProps(["quotation"]);
                             <th>Amount</th>
                             <th>Created</th>
                             <th>Edit</th>
-                            <th>PDF</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="x in quotation" :key="x.quotation_id">
+                        <tr v-for="x in invoice" :key="x.invoice_id">
                             <td>
-                                <a :href="route('quotation.edit', x.quotation_id)">{{ x.quotation_id }}</a>
-                                <template v-if="x.lead_id"><br><small><a :href="route('lead.edit', x.lead_id)" target="_blank">(Lead: {{ x.lead_id }})</a></small></template>
+                                <a :href="route('invoice.edit', x.invoice_id)">{{ x.invoice_id }}</a>
+                                <template v-if="x.quotation_id"><br><small><a :href="route('quotation.edit', x.quotation_id)" target="_blank">(Quote: {{ x.quotation_id }})</a></small></template>
                             </td>
                             <td>
-                                <template v-if="!x.quotation_company">{{ x.quotation_name }}</template>
+                                <template v-if="!x.invoice_company">{{ x.invoice_name }}</template>
                                 <template v-else>
-                                    {{ x.quotation_company }}<br>
-                                    (Attn: {{ x.quotation_name }})
+                                    {{ x.invoice_company }}<br>
+                                    (Attn: {{ x.invoice_name }})
                                 </template>
                                 
 
                             </td>
                             <td>
-                                {{ amountFormat(x.quotation_grandTotal) }}
-                                <br><small>{{ amountFormat(x.quotation_total) }} ({{ amountFormat(x.quotation_sst) }} @ {{ x.quotation_sstPct }}%)</small>
+                                {{ amountFormat(x.invoice_grandTotal) }}
+                                <br><small>{{ amountFormat(x.invoice_total) }} ({{ amountFormat(x.invoice_sst) }} @ {{ x.invoice_sstPct }}%)</small>
                             </td>
                             <td>{{ TimeToString(x.created_at) }}</td>
-                            <td><a :href="route('quotation.edit', x.quotation_id)">Edit</a></td>
-                            <td><a :href="route('quotation.pdf', x.quotation_id)">PDF</a></td>
+                            <td><a :href="route('invoice.edit', x.invoice_id)">Edit</a></td>
                         </tr>
                     </tbody>
                 </table>

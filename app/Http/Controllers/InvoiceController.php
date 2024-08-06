@@ -7,6 +7,7 @@ use App\Models\Invoice;
 use App\Models\InvoiceItems;
 use App\Models\Quotation;
 use App\Models\QuotationItems;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Inertia\Inertia;
 
 class InvoiceController extends Controller
@@ -14,25 +15,23 @@ class InvoiceController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        //
+    public function index() {
+		return Inertia::render("Invoice/Index", [
+			"invoice" => Invoice::orderBy('invoice_id', 'desc')->get()
+		]);
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
-    {
+    public function create() {
 		return $this->renderForm();
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Invoice $invoice)
-    {
-        //
+    public function show(Invoice $invoice) {
     }
 
     /**
@@ -46,16 +45,16 @@ class InvoiceController extends Controller
 		if ($invoice == null) { $invoice = new Invoice(); }
 		if ($invoice->invoice_id == null && request()->get('quotation_id') != null) {
 			$quotation = Quotation::where('quotation_id', request()->get('quotation_id', 0))->firstOrFail();
-            $quotationItems = QuotationItems::where("quotation_id", request()->get('quotation_id', 0))->firstOrFail();
+            $quotationItems = [QuotationItems::where("quotation_id", request()->get('quotation_id', 0))->firstOrFail()];
 		}
 
         // dd($quotationItems);
 
 		return Inertia::render("Invoice/Form", [
             'invoice' => $invoice,
-            'invoice_items' => InvoiceItems::where("invoice_id", $invoice->invoice_id)->get(),
+            'invoice_items' => $invoice->items()->get() ?? [],
             'quotation' => $quotation ?? [],
-            'quotation_items' => [$quotationItems ?? ''],
+            'quotation_items' => $quotationItems ?? [],
             'success' => session("success") ?? ""
 		]);
 	}
@@ -133,4 +132,44 @@ class InvoiceController extends Controller
     {
         //
     }
+
+    public function invoiceMarkPaid(Invoice $invoice) {
+		$invoice->update(['invoice_paidAt' => now()]);
+	}
+
+    public function invoiceMarkApproved(Invoice $invoice) {
+		$invoice->update([
+            'invoice_approvedAt' => now(),
+            'invoice_approvedBy' => me()->id
+        ]);
+	}
+
+	function pdf(Invoice $invoice) {
+		$attn = "";
+		$name = $invoice->invoice_name;
+		if (!empty($invoice->invoice_company)) {
+			$attn = $name;
+			$name = $invoice->invoice_company;
+		}
+
+        $data = [
+			"quotation_attn" => $attn,
+			"quotation_name" => $name,
+			"quotation_number" => str_pad((1000+$invoice->invoice_id), 5, "0", STR_PAD_LEFT),
+			"quotation_billingAddress" => $invoice->invoice_billingAddress,
+			"quotation_deliveryAddress" => $invoice->invoice_deliveryAddress,
+			"quotation_phone" => $invoice->invoice_phone,
+			"quotation_email" => $invoice->invoice_email,
+			"quotation_total" => amount_format($invoice->invoice_total),
+			"quotation_sst" => amount_format($invoice->invoice_sst),
+			"quotation_grandTotal" => amount_format($invoice->invoice_grandTotal),
+			"quotation_sstPct" => $invoice->invoice_sstPct,
+			"quotation_remark" => $invoice->invoice_remark,
+			"quotation_tnc" => $invoice->invoice_tnc,
+			"quotation_items" => $invoice->items()->get()
+		];
+        $pdf = PDF::loadView('pdf.quotation', $data);
+		return $pdf->stream("quotation_{$invoice->invoice_id}.pdf", array("Attachment" => false));
+        // return $pdf->download('myPDF.pdf');
+	}
 }

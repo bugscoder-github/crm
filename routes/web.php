@@ -4,6 +4,7 @@ use App\Http\Controllers\ContactUsController;
 // use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\LeadController;
 use App\Http\Controllers\LeadCommentController;
 use App\Http\Controllers\MetadataController;
@@ -51,9 +52,6 @@ Route::prefix('_backend')->middleware(['auth', 'verified'])->group(function () {
 	
     Route::resources(['user' => UserController::class]);
 
-    Route::get('quotation/{quotation}/pdf', [QuotationController::class, 'pdf'])->name('quotation.pdf');
-    Route::resources(['quotation' => QuotationController::class]);
-
 	Route::get('customer/search', [CustomerController::class, 'search'])->name('customer.search');
     Route::resources(['customer' => CustomerController::class]);
 
@@ -65,6 +63,11 @@ Route::prefix('_backend')->middleware(['auth', 'verified'])->group(function () {
 	Route::resources(['leadComment'  => LeadCommentController::class]);
 	Route::post('lead/{id}/done', [LeadController::class, 'leadMarkDone'])->name('lead.done');
 	Route::post('lead/{id}/reopen', [LeadController::class, 'leadReopen'])->name('lead.reopen');
+
+    Route::get('quotation/{quotation}/pdf', [QuotationController::class, 'pdf'])->name('quotation.pdf');
+    Route::resources(['quotation' => QuotationController::class]);
+
+    Route::resources(['invoice' => InvoiceController::class]);
 
 	Route::resources(['metadata' => MetadataController::class]);
 });

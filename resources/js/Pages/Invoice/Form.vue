@@ -1,44 +1,50 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { useForm, Head, Link } from "@inertiajs/vue3";
+import { useForm, Head } from "@inertiajs/vue3";
 
 const emptyItem = [
-    { quotationItem_id: 0, quotationItem_desc: '', quotationItem_ppu: 1, quotationItem_qty: 0, quotationItem_total: 0 },
+    { invoiceItem_id: 0, invoiceItem_desc: '', invoiceItem_ppu: 1, invoiceItem_qty: 0, invoiceItem_total: 0 },
 ];
 
-const props = defineProps(['lead', 'quotation', 'quotation_items', 'success']);
+const props = defineProps(['invoice', 'invoice_items', 'quotation', 'quotation_items', 'success']);
 let form = useForm({
-	quotation_sstPct: props.quotation?.quotation_sstPct ?? 8,
+	invoice_sstPct: props.invoice?.invoice_sstPct ?? 8,
 	prodServiceQuery: '',
-	lead_id: props.lead?.lead_id ?? props.quotation?.lead_id ?? 0,
-	quotation_company: props.lead?.lead_companyName ?? props.quotation?.quotation_company ?? '',
-	quotation_premiseType: props.lead?.lead_premiseType ?? props.quotation?.quotation_premiseType ?? '',
-	quotation_name: props.lead?.lead_name ?? props.quotation?.quotation_name ?? '',
-	quotation_phone: props.lead?.lead_phone ?? props.quotation?.quotation_phone ?? '',
-	quotation_email: props.lead?.lead_email ?? props.quotation?.quotation_email ?? '',
-	quotation_deliveryAddress: props.lead?.lead_location ?? props.quotation?.quotation_deliveryAddress ?? '',
-	quotation_billingAddress: props.quotation?.quotation_billingAddress ?? '',
-	quotation_tnc: props.quotation?.quotation_tnc ?? '',
-	quotation_remark: props.quotation?.quotation_remark ?? '',
-	quotation_items: props.quotation_items?.length > 0 ? props.quotation_items?.map(x => ({
-		quotationItem_id:    x.quotationItem_id,
-		quotationItem_desc:  x.quotationItem_desc,
-		quotationItem_ppu:   x.quotationItem_ppu,
-		quotationItem_qty:   x.quotationItem_qty,
-		quotationItem_total: x.quotationItem_total
+	quotation_id: props.quotation?.quotation_id ?? 0,
+	invoice_company: props.quotation?.quotation_companyName ?? props.invoice?.invoice_company ?? '',
+	invoice_premiseType: props.quotation?.quotation_premiseType ?? props.invoice?.invoice_premiseType ?? '',
+	invoice_name: props.quotation?.quotation_name ?? props.invoice?.invoice_name ?? '',
+	invoice_phone: props.quotation?.quotation_phone ?? props.invoice?.invoice_phone ?? '',
+	invoice_email: props.quotation?.quotation_email ?? props.invoice?.invoice_email ?? '',
+	invoice_deliveryAddress: props.quotation?.quotation_location ?? props.invoice?.invoice_deliveryAddress ?? '',
+	invoice_billingAddress: props.quotation?.quotation_billingAddress ?? '',
+	invoice_tnc: props.quotation?.quotation_tnc ?? props.invoice?.invoice_tnc ?? '',
+	invoice_remark: props.quotation?.quotation_remark ?? props.invoice?.invoice_remark ?? '',
+	invoice_items: props.quotation_items?.length > 0 ? props.quotation_items?.map(x => ({
+		invoiceItem_id:    x.quotationItem_id,
+		invoiceItem_desc:  x.quotationItem_desc,
+		invoiceItem_ppu:   x.quotationItem_ppu,
+		invoiceItem_qty:   x.quotationItem_qty,
+		invoiceItem_total: x.quotationItem_total
+	})) : props.invoice_items?.length > 0 ? props.invoice_items?.map(x => ({
+		invoiceItem_id:    x.invoiceItem_id,
+		invoiceItem_desc:  x.invoiceItem_desc,
+		invoiceItem_ppu:   x.invoiceItem_ppu,
+		invoiceItem_qty:   x.invoiceItem_qty,
+		invoiceItem_total: x.invoiceItem_total
 	})) : emptyItem,
 });
 
 const handleSubmit = () => {
-	if (props.quotation?.quotation_id) {
-		form.put(route('quotation.update', props.quotation.quotation_id), {
+	if (props.invoice?.invoice_id) {
+		form.put(route('invoice.update', props.invoice.invoice_id), {
 			onSuccess: () => {
 				updateQuotationItems();
 			}
 		});
 	} else {
-		form.post(route('quotation.store'), {
+		form.post(route('invoice.store'), {
 			onSuccess: () => {
 				updateQuotationItems();
 			}
@@ -47,21 +53,21 @@ const handleSubmit = () => {
 };
 
 const updateQuotationItems = () => {
-	form.quotation_items = props.quotation_items?.length > 0 ? props.quotation_items?.map(x => ({
-		quotationItem_id:    x.quotationItem_id,
-		quotationItem_desc:  x.quotationItem_desc,
-		quotationItem_ppu:   x.quotationItem_ppu,
-		quotationItem_qty:   x.quotationItem_qty,
-		quotationItem_total: x.quotationItem_total
+	form.invoice_items = props.invoice_items?.length > 0 ? props.invoice_items?.map(x => ({
+		invoiceItem_id:    x.invoiceItem_id,
+		invoiceItem_desc:  x.invoiceItem_desc,
+		invoiceItem_ppu:   x.invoiceItem_ppu,
+		invoiceItem_qty:   x.invoiceItem_qty,
+		invoiceItem_total: x.invoiceItem_total
 	})) : emptyItem;
 }
 
 const addItem = () => {
-    form.quotation_items.push(emptyItem[0]);
+    form.invoice_items.push(emptyItem[0]);
 };
 
 const removeItem = (index) => {
-    form.quotation_items.splice(index, 1);
+    form.invoice_items.splice(index, 1);
 };
 
 const prodServiceResult = ref([]);
@@ -82,17 +88,17 @@ const grandTotal = ref(0);
 const calcTotal = () => {
 	ppuTotal = 0; qtyTotal = 0; subTotal = 0; sst = 0;
 
-	for (let x in form.quotation_items) {
-		let thisTotal = form.quotation_items[x].quotationItem_ppu;
-		let thisQty   = form.quotation_items[x].quotationItem_qty;
+	for (let x in form.invoice_items) {
+		let thisTotal = form.invoice_items[x].invoiceItem_ppu;
+		let thisQty   = form.invoice_items[x].invoiceItem_qty;
 		ppuTotal   += thisTotal;
 		qtyTotal   += thisQty;
 		subTotal   += (thisTotal * thisQty);
 
-		form.quotation_items[x].quotationItem_total = (thisTotal * thisQty);
+		form.invoice_items[x].invoiceItem_total = (thisTotal * thisQty);
 	}
 
-	sst = subTotal*(form.quotation_sstPct/100);
+	sst = subTotal*(form.invoice_sstPct/100);
 	sst = parseFloat(sst.toFixed(2));
 	grandTotal.value = subTotal + sst;
 }
@@ -110,13 +116,13 @@ const selectProdService = () => {
 		if ($this.prop('checked')) {
 			let data = $this.attr('data');
 
-			form.quotation_items.push({
-				quotationItem_id: 0,
+			form.invoice_items.push({
+				invoiceItem_id: 0,
 				prodService_id: prodServiceResult.value[data].productService_id,
-				quotationItem_desc: prodServiceResult.value[data].productService_desc,
-				quotationItem_ppu: prodServiceResult.value[data].productService_ppu,
-				quotationItem_qty: 1,
-				quotationItem_total: prodServiceResult.value[data].productService_ppu
+				invoiceItem_desc: prodServiceResult.value[data].productService_desc,
+				invoiceItem_ppu: prodServiceResult.value[data].productService_ppu,
+				invoiceItem_qty: 1,
+				invoiceItem_total: prodServiceResult.value[data].productService_ppu
 			});
 		}
 	});
@@ -151,16 +157,16 @@ onMounted(() => {
 	<Head title="Members" />
 
 	<AuthenticatedLayout>
-		<template #header>New Quotation</template>
+		<template #header>New Invoice</template>
 
 		<div class="alert alert-success alert-dismissible" v-if="props.success">
 			{{props.success}}
 			<template v-if="isAdmin($page)">
-				[ <a :href="route('quotation.index')">Go to quotations list</a> ]
+				[ <a :href="route('invoice.index')">Go to invoices list</a> ]
 			</template>
 		</div>
 
-		<!-- {{ props.lead }} -->
+		<!-- {{ props.quotation_items }} -->
 
 		<section class="content">
 			<div class="container-fluid">
@@ -183,41 +189,41 @@ onMounted(() => {
 								</div>
 
 								<div class="card-body">
-									<input type="hidden" id="lead_id" v-model="form.lead_id" v-if="form.lead_id">
+									<input type="hidden" id="invoice_id" v-model="form.invoice_id" v-if="form.invoice_id">
 									<div class="row">
 										<div class="col-sm-8">
 											<div class="form-group">
-												<label for="quotation_company">Company</label>
-												<input type="text" class="form-control" id="quotation_company" placeholder="Company Name" v-model="form.quotation_company">
-												<span class="text-danger" v-if="form.errors.quotation_company" >{{ form.errors.quotation_company }}</span >
+												<label for="invoice_company">Company</label>
+												<input type="text" class="form-control" id="invoice_company" placeholder="Company Name" v-model="form.invoice_company">
+												<span class="text-danger" v-if="form.errors.invoice_company" >{{ form.errors.invoice_company }}</span >
 											</div>
 										</div>
 										<div class="col-sm-4">
 											<div class="form-group">
-												<label for="quotation_premiseType">Premise Type</label>
-												<input type="text" class="form-control" id="quotation_premiseType" placeholder="Premise Type" v-model="form.quotation_premiseType">
-												<span class="text-danger" v-if="form.errors.quotation_premiseType" >{{ form.errors.quotation_premiseType }}</span >
+												<label for="invoice_premiseType">Premise Type</label>
+												<input type="text" class="form-control" id="invoice_premiseType" placeholder="Premise Type" v-model="form.invoice_premiseType">
+												<span class="text-danger" v-if="form.errors.invoice_premiseType" >{{ form.errors.invoice_premiseType }}</span >
 											</div>
 										</div>
 										<div class="col-sm-6">
 											<div class="form-group">
 												<label for="lead_name">Name</label>
-												<input type="text" class="form-control" id="lead_name" placeholder="Name" v-model="form.quotation_name">
-												<span class="text-danger" v-if="form.errors.quotation_name" >{{ form.errors.quotation_name }}</span >
+												<input type="text" class="form-control" id="lead_name" placeholder="Name" v-model="form.invoice_name">
+												<span class="text-danger" v-if="form.errors.invoice_name" >{{ form.errors.invoice_name }}</span >
 											</div>
 										</div>
 										<div class="col-sm-2">
 											<div class="form-group">
 												<label for="lead_phone">Phone</label>
-												<input type="text" class="form-control" id="lead_phone" placeholder="Phone" v-model="form.quotation_phone">
-												<span class="text-danger" v-if="form.errors.quotation_phone" >{{ form.errors.quotation_phone }}</span >
+												<input type="text" class="form-control" id="lead_phone" placeholder="Phone" v-model="form.invoice_phone">
+												<span class="text-danger" v-if="form.errors.invoice_phone" >{{ form.errors.invoice_phone }}</span >
 											</div>
 										</div>
 										<div class="col-sm-4">
 											<div class="form-group">
 												<label for="exampleInputEmail1">Email</label>
-												<input type="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email" v-model="form.quotation_email">
-												<span class="text-danger" v-if="form.errors.quotation_email" >{{ form.errors.quotation_email }}</span >
+												<input type="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email" v-model="form.invoice_email">
+												<span class="text-danger" v-if="form.errors.invoice_email" >{{ form.errors.invoice_email }}</span >
 											</div>
 										</div>
 									</div>
@@ -225,15 +231,15 @@ onMounted(() => {
 									<div class="form-group row">
 										<label for="lead_companyName" class="col-sm-2 col-form-label">Delivery Address</label >
 										<div class="col-sm-10">
-											<input type="text" class="form-control" id="lead_companyName" placeholder="Delivery Address" v-model="form.quotation_deliveryAddress" />
-											<span class="text-danger" v-if="form.errors.quotation_deliveryAddress" >{{ form.errors.quotation_deliveryAddress }}</span >
+											<input type="text" class="form-control" id="lead_companyName" placeholder="Delivery Address" v-model="form.invoice_deliveryAddress" />
+											<span class="text-danger" v-if="form.errors.invoice_deliveryAddress" >{{ form.errors.invoice_deliveryAddress }}</span >
 										</div>
 									</div>
 									<div class="form-group row">
 										<label for="lead_companyName" class="col-sm-2 col-form-label">Billing Address</label>
 										<div class="col-sm-10">
-											<input type="text" class="form-control" id="lead_companyName" placeholder="Billing Address" v-model="form.quotation_billingAddress" />
-											<span class="text-danger" v-if="form.errors.quotation_billingAddress" >{{ form.errors.quotation_billingAddress }}</span >
+											<input type="text" class="form-control" id="lead_companyName" placeholder="Billing Address" v-model="form.invoice_billingAddress" />
+											<span class="text-danger" v-if="form.errors.invoice_billingAddress" >{{ form.errors.invoice_billingAddress }}</span >
 										</div>
 									</div>
 									<div class="form-group row">
@@ -264,20 +270,20 @@ onMounted(() => {
 										<div class="col-1 text-center">Frequency</div>
 										<div class="col-1 text-center">Amount</div>
 									</div>
-									<div class="row form-group" v-for="(item, index) in form.quotation_items" :key="index">
-										<input type="hidden" v-model="item.quotationItem_id">
+									<div class="row form-group" v-for="(item, index) in form.invoice_items" :key="index">
+										<input type="hidden" v-model="item.invoiceItem_id">
 										<input type="hidden" class="prodService_id" :data="item.prodService_id">
 										<div class="col-1"><button @click.prevent="removeItem(index)" class="btn btn-sm bg-danger"><i class="fas fa-times"></i></button></div>
 										<div class="col-7">
-											<textarea v-model="item.quotationItem_desc" class="form-control"></textarea>
+											<textarea v-model="item.invoiceItem_desc" class="form-control"></textarea>
 										</div>
 										<div class="col-2">
-											<input type="number" class="reCalc form-control text-right" v-model="item.quotationItem_ppu">
+											<input type="number" class="reCalc form-control text-right" v-model="item.invoiceItem_ppu">
 										</div>
 										<div class="col-1">
-											<input type="number" class="reCalc form-control text-right" v-model="item.quotationItem_qty">
+											<input type="number" class="reCalc form-control text-right" v-model="item.invoiceItem_qty">
 										</div>
-										<div class="col-1 col-form-label text-right">{{ item.quotationItem_total }}</div>
+										<div class="col-1 col-form-label text-right">{{ item.invoiceItem_total }}</div>
 									</div>
 									<div class="row form-group">
 										<div class="col-1"></div>
@@ -296,7 +302,7 @@ onMounted(() => {
 										<div class="col-1"></div>
 										<div class="col-7"></div>
 										<div class="col-3 text-right p-0">
-											<input type="number" class="reCalc text-right col-2" v-model="form.quotation_sstPct"> % SST
+											<input type="number" class="reCalc text-right col-2" v-model="form.invoice_sstPct"> % SST
 										</div>
 										<div class="col-1 text-right p-0">{{  sst }}</div>
 									</div>
@@ -325,16 +331,16 @@ onMounted(() => {
 									<div class="row">
 										<div class="col-sm-12">
 											<div class="form-group">
-												<label for="quotation_remark">Remark</label>
-												 <textarea v-model="form.quotation_remark" class="form-control"></textarea>
-												<span class="text-danger" v-if="form.errors.quotation_remark" >{{ form.errors.quotation_remark }}</span >
+												<label for="invoice_remark">Remark</label>
+												 <textarea v-model="form.invoice_remark" class="form-control"></textarea>
+												<span class="text-danger" v-if="form.errors.invoice_remark" >{{ form.errors.invoice_remark }}</span >
 											</div>
 										</div>
 										<div class="col-sm-12">
 											<div class="form-group">
-												<label for="quotation_tnc">Terms and Condition</label>
-												<textarea v-model="form.quotation_tnc" class="form-control"></textarea>
-												<span class="text-danger" v-if="form.errors.quotation_tnc" >{{ form.errors.quotation_tnc }}</span >
+												<label for="invoice_tnc">Terms and Condition</label>
+												<textarea v-model="form.invoice_tnc" class="form-control"></textarea>
+												<span class="text-danger" v-if="form.errors.invoice_tnc" >{{ form.errors.invoice_tnc }}</span >
 											</div>
 										</div>
 									</div>
@@ -342,8 +348,6 @@ onMounted(() => {
 							</div>
 							
 							<button type="submit" class="btn btn-info">Create</button>&nbsp;
-							<a :href="route('quotation.pdf', props.quotation.quotation_id)" v-if="props.quotation?.quotation_id">PDF</a>&nbsp;
-							<Link :href="route('invoice.create')" v-if="props.quotation?.quotation_id" :data="{quotation_id: props.quotation.quotation_id}">Invoice</Link>
 							<div class="card"></div>
 					</form>
 				</div>

@@ -4,40 +4,54 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Http\Requests\UserRequest;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Log;
 
 use App\Models\Role;
+use App\Models\Team;
 
 class UserController extends Controller {
 	public function index() {
-		if (isAdmin() == false) { abort(403); }
+		if (!isAdmin() && !isOwner()) { abort(403); }
 
-		$users = me()->currentTeam()->users()->orderByRaw('LOWER(name)')->get();
+		$users = User::orderByRaw('LOWER(name)');
+		// dd($users->get()->toArray());
+		if (isAdmin()) {
+			$users = $users->where('current_team_id', me()->current_team_id);
+		}
+
+
+		// dd(me()->hasRole('Admin'));
 
 		return Inertia::render('User/Index', [
-			'users' => $users
+			'users' => $users->get()->toArray()
 		]);
 	}
 
 	public function create() {
-		if (isAdmin() == false) { abort(403); }
+		if (!isAdmin() && !isOwner()) { abort(403); }
 		
 		return $this->renderForm();
 	}
 
 	public function edit(User $user) {
-		if (isAdmin() == false && !isMine($user->id)) { abort(403); }
+		if (!isAdmin() && !isOwner() && !isMine($user->id)) { abort(403); }
 
-		$user['roles'] = $user->roles()->where('team_id', me()->currentTeam()->id)->first();
+		// $user['roles'] = $user->roles()->where('team_id', me()->currentTeam()->id)->first();
+		// dd($user);
 
 		return $this->renderForm($user);
 	}
 
 	public function renderForm(User $user = null) {
+		// dd(me()->current_team_id);
+		$roles = (isAdmin()) ? Role::where('name', '!=', 'Owner')->get() : Role::get();
+		$teams = (isAdmin()) ? Team::where('id', me()->current_team_id)->get() : Team::get();
+
 		return Inertia::render('User/Form', [
 			'user' => $user == null ? new User() : $user,
-			'roles' => Role::get(),
+			'teams' => $teams,
+			'roles' => $roles,
 			'success' => session('success') ?? '',
 		]);
 	}
@@ -46,6 +60,7 @@ class UserController extends Controller {
 
 	public function store(UserRequest $request) {
 		$result = $this->save($request);
+		// dd($result->id);
 
 		return redirect()->route('user.edit', $result->id)->withInput()->with('success', 'User created successfully.');
 	}
@@ -58,31 +73,31 @@ class UserController extends Controller {
 
 	public function save(UserRequest $request, User $user = null) {
 		$data = $request->validated();
-
-		$role = Role::where('id', $data['role'])->firstOrFail();
+		$role = $data['role'] > 0 ? Role::where('id', $data['role'])->firstOrFail() : '';
+		$team_id = isOwner() ? $data['current_team_id'] : me()->current_team_id;
 
 		if ($user) {
-			$user->update([
-				'name'     => $data['name'],
-				'email'    => $data['email'],
-				'password' => $data['password'] ? Hash::make($data['password']) : $user->password,
-			]);
+			// \DB::connection()->enableQueryLog();
+			$data['password'] = $data['password'] ? Hash::make($data['password']) : $user->password;
+			if (!isAdmin() && !isOwner() && isset($data['current_team_id'])) { unset($data['current_team_id']); }
 
-			if (me()->isAdmin() && Auth()->id() != $user->id) {
-				$user->syncRoles([$role], me()->currentTeam());
+			$user->update($data);
+			// dd(\DB::getQueryLog());
+
+			if ((isAdmin() || isOwner()) && !isMine($user->id)) {
+				$user->syncRoles([$role], $team_id);
 			}
 		} else {
+			if (!isAdmin() && !isOwner()) { abort(403); }
+
 			$user = User::create([
 				'name'     => $data['name'],
 				'email'    => $data['email'],
 				'password' => Hash::make($data['password']),
-				'current_team_id' => me()->currentTeam()->id
+				'current_team_id' => $team_id
 			]);
 
-
-			if (me()->isAdmin()) {
-				$user->syncRoles([$role], me()->currentTeam());
-			}
+			$user->syncRoles([$role], $team_id);
 		}
 
 		return $user;
@@ -92,7 +107,7 @@ class UserController extends Controller {
 
 	public function destroy(User $user) {
 		if (isMine($user->id)) { abort(403); }
-		if (!isAdmin())      { abort(403); }
+		if (!isAdmin() && !isOwner()) { abort(403); }
 
 		$user->delete();
 		return redirect()->route('user.index')->with('success', 'User deactivated successfully.');

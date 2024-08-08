@@ -18,6 +18,17 @@ class User extends Authenticatable implements LaratrustUser
 {
     use HasRolesAndPermissions, SoftDeletes, HasFactory, Notifiable;
 
+    protected $appends = ['roles', 'teams'];
+    public function getRolesAttribute() {
+        // return $this->roles()->where('team_id', $this->currentTeam()->id)->first();
+        return $this->roles()->first();
+        // return $this->rolesTeams();
+    }
+    public function getTeamsAttribute() {
+        // return $this->roles->pluck('name');
+        return $this->currentTeam();
+    }
+
     /**
      * The attributes that are mass assignable.
      *
@@ -27,6 +38,7 @@ class User extends Authenticatable implements LaratrustUser
         'name',
         'email',
         'password',
+        'current_team_id'
     ];
 
     /**
@@ -62,10 +74,10 @@ class User extends Authenticatable implements LaratrustUser
         return $this->rolesTeams()->where('id', $this->current_team_id)->first();
     }
 
-    public function isAdmin()
-    {
-        return $this->hasRole('Owner') || $this->hasRole('Admin');
-    }
+    // public function isAdmin()
+    // {
+    //     return $this->hasRole('Owner') || $this->hasRole('Admin');
+    // }
 
     public function lead(): HasMany {
         return $this->hasMany(Lead::class);
@@ -74,10 +86,9 @@ class User extends Authenticatable implements LaratrustUser
     public function getNotificationCount() {
     	$userRel = [$this->id];
 
-
-     	if ($this->hasRole('Admin') || $this->hasRole('owner')) {
-        	array_push($userRel, 0);
-        }
+     	// if ($this->hasRole('Admin') || $this->hasRole('owner')) {
+        // 	array_push($userRel, 0);
+        // }
     	return Lead::whereIn('user_id', $userRel)->where('read_at', null)->count();
     }
 }

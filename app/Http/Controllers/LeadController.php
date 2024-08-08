@@ -13,15 +13,21 @@ use Spatie\Activitylog\Models\Activity;
 
 class LeadController extends Controller {
     public function index() {
+        \DB::connection()->enableQueryLog();
         $leads = Lead::selectRaw('leads.*, users.name')->leftJoin("users", function ($join) {
             $join->on("users.id", "=", "leads.user_id");
-        })->orderBy('lead_id', 'desc');
-        if (!isAdmin()) {
+        });
+        // $leads = Lead::joinUser();
+        // dd(\DB::getQueryLog());
+        if (isAdmin()) {
+
+        }
+        if (!isAdmin() && !isOwner()) {
             $leads = $leads->where("user_id", "=", auth()->user()->id);
         }
 
         return Inertia::render("Lead/Index", [
-            "leads" => $leads->get(),
+            "leads" => $leads->orderBy('lead_id', 'desc')->get(),
         ]);
     }
 

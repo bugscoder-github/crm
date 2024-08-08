@@ -1,6 +1,8 @@
 <?php
 use Spatie\Permission\Models\Role;
 use App\Models\Metadata;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 if (!function_exists("getMeta")) {
 	function getMeta($type = '', $label = '') {
@@ -35,13 +37,19 @@ if (!function_exists('getConfig')) {
 
 if (!function_exists('me')) {
 	function me() {
-		return auth()->user();
+		return Auth::user();
 	}
 }
 
 if (!function_exists('isAdmin')) {
 	function isAdmin() {
-		return me()->isAdmin();
+		return me()->hasRole('Admin');
+	}
+}
+
+if (!function_exists('isOwner')) {
+	function isOwner() {
+		return me()->hasRole('Owner');
 	}
 }
 

@@ -39,7 +39,7 @@ function doneClass(x = null) {
             </div>
             <div class="card-body table-responsive p-0">
 
-                <!-- {{leads}} -->
+                {{leads}}
                 <table class="table table-hover text-nowrap">
                     <thead>
                         <tr>

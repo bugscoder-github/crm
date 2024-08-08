@@ -10,7 +10,10 @@ export default {
       return moment(timestamp).format("DD MMM, YYYY HH:mm");
     },
     isAdmin: function (t) {
-      return t.props.isAdmin;
+      return t.props.auth.user.roles[0].name == 'Admin';
+    },
+    isOwner: function (t) {
+      return t.props.auth.user.roles[0].name == 'Owner';
     },
     isMine: function (t, id) {
       return t.props.auth.user.id == id;
@@ -57,6 +60,15 @@ export default {
       }
 
       return txt;
+    },
+    getRoleClass: function (roleName) {
+      var className = 'badge';
+      if (roleName.toLowerCase() == "owner")   { className += ' bg-danger'; }
+      if (roleName.toLowerCase() == "admin")   { className += ' bg-info'; }
+      if (roleName.toLowerCase() == "sales")   { className += ' bg-success'; }
+      if (roleName.toLowerCase() == "service") { className += ' bg-warning'; }
+    
+      return className;
     }
   },
 };

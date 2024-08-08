@@ -10,6 +10,7 @@ use App\Http\Controllers\LeadCommentController;
 use App\Http\Controllers\MetadataController;
 use App\Http\Controllers\ProductServiceController;
 use App\Http\Controllers\QuotationController;
+use App\Http\Controllers\TeamController;
 // use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -51,6 +52,8 @@ Route::prefix('_backend')->middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
 	
     Route::resources(['user' => UserController::class]);
+
+	Route::resources(['team' => TeamController::class]);
 
 	Route::get('customer/search', [CustomerController::class, 'search'])->name('customer.search');
     Route::resources(['customer' => CustomerController::class]);

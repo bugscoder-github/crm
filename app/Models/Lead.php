@@ -31,6 +31,18 @@ class Lead extends Model {
         return $this->belongsTo(User::class);
     }
 
+    public function scopeJoinUser($query) {
+        $join = '';
+        // $join = $query->leftJoin("users", "users.id", "=", "leads.user_id");
+        // dd(me()->current_team_id);
+
+        if (isAdmin()) {
+            // $join = $join->where('users.current_team_id', me()->current_team_id);
+        }
+
+        return $join;
+    }
+
     public function getActivitylogOptions(): LogOptions {
         return LogOptions::defaults()->useLogName('lead')->logAll();
     }

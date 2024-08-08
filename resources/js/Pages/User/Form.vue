@@ -2,11 +2,12 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Link, useForm, Head } from '@inertiajs/vue3';
 
-const props = defineProps(['user', 'roles', 'success']);
+const props = defineProps(['user', 'teams', 'roles', 'success']);
 const form = useForm({
 	name: props.user?.name || '',
 	email: props.user?.email || '',
 	role: props.user?.roles?.id || '',
+	current_team_id: props.user?.current_team_id ?? '',
 	password: '',
 	password_confirmation: ''
 });
@@ -28,21 +29,21 @@ const handleSubmit = () => {
         	<template v-if="!props.user.id">New User</template>
         	<template v-else>
         		Edit 
-        		<template v-if="isAdmin($page)">User</template>
+        		<template v-if="isAdmin($page) || isOwner($page)">User</template>
         		<template v-else>Profile</template>
         	</template>
         </template>
-        <template #back v-if="isAdmin($page)">
+        <template #back v-if="isAdmin($page) || isOwner($page)">
         	<a :href="route('user.index')">User List</a>
         </template>
 		<div class="alert alert-success alert-dismissible" v-if="props.success">
 			{{props.success}}
-			<template v-if="isAdmin($page)">
+			<template v-if="isAdmin($page) || isOwner($page)">
 				[ <a :href="route('user.index')">Go to users list</a> ]
 			</template>
 		</div>
 
-		<div class="card card-info">
+		<div class="card">
 			<div class="card-header">
 				<template v-if="props.user?.name">
 					<b>{{props.user?.name}}</b> - {{props.user?.email}}
@@ -82,16 +83,28 @@ const handleSubmit = () => {
 						<div class="form-group row">
 		                  <label for="exampleSelectRounded0" class="col-sm-2 col-form-label">Role</label>
 							<div class="col-sm-10">
-								<template v-if="isAdmin($page) && !isMine($page, props.user.id)">
+								<template v-if="(isAdmin($page) || isOwner($page)) && !isMine($page, props.user.id)">
 			                  		<select class="custom-select" id="exampleSelectRounded0" v-model="form.role">
 			                  			<option value="">Select Role</option>
 	                        			<option :value="x.id" v-for="x in roles">{{ x.name }}</option>
 			                  		</select>
 		            			</template>
 		            			<template v-else>
-									{{$page.props.auth.user.role_names[0]}}
+									{{$page.props.auth.user.roles[0].name}}
 		            			</template>
 		            			<span class="text-danger" v-if="form.errors.role">{{ form.errors.role }}</span>
+			              </div>
+		            	</div>
+
+						<div class="form-group row">
+		                  <label for="exampleSelectRounded0" class="col-sm-2 col-form-label">Team</label>
+							<div class="col-sm-10">
+								<select v-if="isOwner($page)" class="custom-select" id="exampleSelectRounded0" v-model="form.current_team_id">
+									<option value="">Select Team</option>
+									<option :value="x.id" v-for="x in teams">{{ x.name }}</option>
+								</select>
+								<div v-else>{{ $page.props.auth.user.teams.name }}</div>
+		            			<span class="text-danger" v-if="form.errors.current_team_id">{{ form.errors.current_team_id }}</span>
 			              </div>
 		            	</div>
 

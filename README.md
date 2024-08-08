@@ -32,18 +32,19 @@ NEXT ACTION:
 **24 Jul, 2024** (via whatsapp)
 
 TODO:
-* [ ] message from whatsapp
-* [ ] new enquiry alert (without refreshing page)
-* [ ] lead form make one button only
-* [ ] channge follow up submit button to dropdown
-    * Status
-    * Pending
-    * Called & Whatsapp
-    * Quotation Sent
-    * Price Given
-    * Site Visit
-    * Sales Closed
-    * Dropped
+* [ ] lead
+    * [ ] message from whatsapp
+    * [ ] new enquiry alert (without refreshing page)
+    * [ ] lead form make one button only
+    * [ ] channge follow up submit button to dropdown
+        * Status
+        * Pending
+        * Called & Whatsapp
+        * Quotation Sent
+        * Price Given
+        * Site Visit
+        * Sales Closed
+        * Dropped
 
 ---
 
@@ -57,7 +58,7 @@ NEW:
 
 TODO:
 * [ ] User
-    * [ ] Branch
+    * [X] ~~*Branch*~~ [2024-08-08]
     * [ ] Reassigned Sales Person
 * [ ] Lead
     * [X] ~~*Audit Trail*~~ [2024-08-02]

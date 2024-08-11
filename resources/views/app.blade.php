@@ -18,6 +18,10 @@
 
         <!-- Scripts -->
         @routes
+		<script>
+            var __locale = '{{ app()->getLocale() ?? "en" }}';
+            var __fallback_locale = '{{ app()->getFallbackLocale() }}';
+        </script>
         @vite(['resources/js/app.js', "resources/js/Pages/{$page['component']}.vue"])
         @inertiaHead
     </head>

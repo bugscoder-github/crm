@@ -1,3 +1,9 @@
+**10 Aug, 2024**
+* Quotation Revamp
+* Product Structure
+* Added Languages Support
+
+
 **02 Aug, 2024**
 
 NEW:

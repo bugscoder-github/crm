@@ -7,8 +7,10 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\LeadController;
 use App\Http\Controllers\LeadCommentController;
 use App\Http\Controllers\MetadataController;
-use App\Http\Controllers\ProductServiceController;
+use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\TemplateServiceController;
 use App\Http\Controllers\QuotationController;
+use App\Http\Controllers\SharedController;
 // use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -52,13 +54,9 @@ Route::prefix('_backend')->middleware(['auth', 'verified'])->group(function () {
     Route::resources(['user' => UserController::class]);
 
     Route::get('quotation/{quotation}/pdf', [QuotationController::class, 'pdf'])->name('quotation.pdf');
-    Route::resources(['quotation' => QuotationController::class]);
 
 	Route::get('customer/search', [CustomerController::class, 'search'])->name('customer.search');
     Route::resources(['customer' => CustomerController::class]);
-
-	Route::get('prodService/search', [ProductServiceController::class, 'search'])->name('prodService.search');
-    Route::resources(['prodService' => ProductServiceController::class]);
 
     Route::resources(['lead' => LeadController::class]);
 	Route::resources(['lead.comment' => LeadCommentController::class]);
@@ -67,6 +65,19 @@ Route::prefix('_backend')->middleware(['auth', 'verified'])->group(function () {
 	Route::post('lead/{id}/reopen', [LeadController::class, 'leadReopen'])->name('lead.reopen');
 
 	Route::resources(['metadata' => MetadataController::class]);
+
+
+	Route::get('datatables', [ServiceController::class, 'datatables'])->name('services.datatables');
+    Route::resources(['services' => ServiceController::class]);
+
+	Route::get('template/datatables', [TemplateServiceController::class, 'datatables'])->name('template.services.datatables');
+	Route::get('template/{id}/services', [TemplateServiceController::class, 'services'])->name('template.services.retrieve');
+    Route::resources(['template/services' => TemplateServiceController::class]);
+
+    Route::resources(['quotation' => QuotationController::class]);
+
+	Route::post('estimate', [SharedController::class, 'estimate'])->name('shared.estimate');
+
 });
 
 

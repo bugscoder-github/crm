@@ -21,25 +21,70 @@ class QuotationRequest extends FormRequest
 	 */
 	public function rules(): array {
 		$rules = [
-			"lead_id" => [],
-			"quotation_name" => [],
-			"quotation_phone" => [],
-			"quotation_company" => [],
-			"quotation_premiseType" => [],
-			"quotation_email" => [],
-			"quotation_deliveryAddress" => [],
-			"quotation_billingAddress" => [],
-			"quotation_tnc" => [],
-			'quotation_remark' => [],
-			'quotation_sstPct' => [],
-            // 'quotation_items' => ['array'],
-            'quotation_items.*.quotationItem_desc' => [],
-            'quotation_items.*.quotationItem_ppu' => [],
-            'quotation_items.*.quotationItem_qty' => [],
+			// Preset Data
+			'quotation_number' => [
+				'nullable'
+			],
+			'quotation_type' => [
+				'nullable'
+			],
+			'frequency' => [
+				'nullable',
+				'integer'
+			],
+			'frequency_type' => [
+				'nullable'
+			],
+			'quotation_date' => [
+				'nullable',
+				'date_format:format,Y-m-d'
+			],
+			'discount_code' => [
+				'nullable'
+			],
+			'currency' => [
+				'required',
+				'max:255'
+			],
+			'currency_symbol' => [
+				'nullable',
+				'max:255'
+			],
+			'is_shipping_address' => [
+				'boolean'
+			],
+
+			// Item Data
+			'items.*.item_type' => [
+				'required',
+				'in:service,custom'
+			],
+			'items.*.service_id' => [
+				'nullable',
+				'integer'
+			],
+			'items.*.name' => [
+				'nullable',
+			],
+			'items.*.description' => [
+				'nullable',
+			],
+			'items.*.quantity' => [
+				'required',
+				'integer',
+				'min:1'
+			],
+			'items.*.unit_amount' => [
+				'required',
+				'numeric'
+			],
+			'items.*.is_enabled' => [
+				'boolean',
+			],
 		];
 
         if ($this->isMethod('put')) {
-            $rules['quotation_items.*.quotationItem_id'] = 'sometimes|exists:quotation_items,quotationItem_id';
+            $rules['items.*.id'] = 'sometimes|exists:quotation_items,id';
         }
 		
 		return $rules;

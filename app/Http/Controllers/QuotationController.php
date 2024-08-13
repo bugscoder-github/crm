@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\QuotationRequest;
 use App\Models\Quotation;
+use App\Models\QuotationItem;
 use APp\Models\Lead;
-use App\Models\QuotationItems;
 use Inertia\Inertia;
+
+use App\Services\CalculationService;
 
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -16,7 +18,7 @@ class QuotationController extends Controller {
 	 */
 	public function index() {
 		return Inertia::render("Quotation/Index", [
-			"quotation" => Quotation::orderBy('quotation_id', 'desc')->get()
+			"quotation" => me()->currentTeam()->quotations()->orderBy('id', 'desc')->get()
 		]);
 	}
 
@@ -47,9 +49,16 @@ class QuotationController extends Controller {
 			$lead = Lead::where('lead_id', request()->get('lead_id', 0))->firstOrFail();
 		}
 
+		$quotation['lead_id'] = $lead->lead_id ?? null;
+		$quotation['items'] = $quotation->items;
+		$quotation['discounts'] = $quotation->discounts;
+
+		// TODO: To be adjusted
+		$quotation['currency'] = 'MYR';
+
 		return Inertia::render("Quotation/Form", [
-			"quotation" => $quotation,
-			"quotation_items" => QuotationItems::where("quotation_id", $quotation->quotation_id)->get(),
+			"form" => $quotation,
+			"itemTemplate" => new QuotationItem(),
 			"lead" => $lead ?? [],
 			"success" => session("success") ?? ""
 		]);
@@ -83,36 +92,8 @@ class QuotationController extends Controller {
 
 	public function save(QuotationRequest $request, Quotation $quotation = null) {
 		$data = $request->validated();
-		$basic = collect($data)->except('quotation_items')->toArray();
-		$items = $data['quotation_items'];
-		// dd($basic);
-
-		if ($quotation == null) { $quotation = new Quotation(); }
-		$quotation = Quotation::updateOrCreate(['quotation_id' => $quotation->quotation_id], $basic);
 		
-		//Delete item that is not in data[quotation_item]
-		$dataItemId = array_filter(array_column($items, 'quotationItem_id'));
-		QuotationItems::where('quotation_id', $quotation->quotation_id)->whereNotIn('quotationItem_id', $dataItemId)->delete();
-		
-		$total = 0;
-		foreach($items as $key => $value) {
-			if (empty($value['quotationItem_desc'])) { continue; }
-
-			$value['quotation_id'] = $quotation->quotation_id;
-			if (!isset($value['quotationItem_id'])) { $value['quotationItem_id'] = null; }
-			if ($value['quotationItem_id'] == 0)    { $value['quotationItem_id'] = null; }
-
-			$value['quotationItem_total'] = ($value['quotationItem_ppu'] * $value['quotationItem_qty']);
-			$total += $value['quotationItem_total'];
-
-			QuotationItems::updateOrCreate(['quotationItem_id'=> $value['quotationItem_id']], $value);
-		}
-
-		$quotation->update([
-			'quotation_total' => $total,
-			'quotation_sst' => $total*($basic['quotation_sstPct']/100),
-			'quotation_grandTotal' => $total*(1+($basic['quotation_sstPct']/100))
-		]);
+		dd($data);
 
 		return $quotation;
 	}

@@ -2,6 +2,8 @@
 * Quotation Revamp
 * Product Structure
 * Added Languages Support
+* User Access Multiple Branch
+* Template For Email, Invoice, Quotation
 
 
 **02 Aug, 2024**

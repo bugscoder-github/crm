@@ -22,6 +22,9 @@ class QuotationRequest extends FormRequest
 	public function rules(): array {
 		$rules = [
 			// Preset Data
+			'lead_id' => [
+				'required'
+			],
 			'quotation_number' => [
 				'nullable'
 			],

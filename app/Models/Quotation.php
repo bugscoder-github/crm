@@ -50,6 +50,76 @@ class Quotation extends Model
     ];
 
     /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'lead_id',
+        'quotation_type',
+        'frequency_type',
+        'frequency',
+        'quotation_number',
+        'quotation_date',
+        'discount_code',
+        'is_shipping_address',
+        'currency',
+        'currency_symbol',
+        'tax_name',
+        'tax_type',
+        'tax_charge_type',
+        'tax_rate',
+        'sub_total',
+        'total_discount',
+        'total_tax',
+        'total_amount'
+    ];
+    
+    // /**
+    //  * Interact with the sub total
+    //  */
+    // protected function subTotal(): Attribute
+    // {
+    //     return Attribute::make(
+    //         get: fn (string $value) => $value / 100,
+    //         set: fn (string $value) => $value * 100,
+    //     );
+    // }
+
+    // /**
+    //  * Interact with the total discount
+    //  */
+    // protected function totalDiscount(): Attribute
+    // {
+    //     return Attribute::make(
+    //         get: fn (string $value) => $value / 100,
+    //         set: fn (string $value) => $value * 100,
+    //     );
+    // }
+
+    // /**
+    //  * Interact with the total tax
+    //  */
+    // protected function totalTax(): Attribute
+    // {
+    //     return Attribute::make(
+    //         get: fn (string $value) => $value / 100,
+    //         set: fn (string $value) => $value * 100,
+    //     );
+    // }
+
+    // /**
+    //  * Interact with the total amount
+    //  */
+    // protected function totalAmount(): Attribute
+    // {
+    //     return Attribute::make(
+    //         get: fn (string $value) => $value / 100,
+    //         set: fn (string $value) => $value * 100,
+    //     );
+    // }
+
+    /**
      * Relationship has many quotation invoices
      */
     public function invoices() :HasMany

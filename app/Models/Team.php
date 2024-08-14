@@ -86,4 +86,12 @@ class Team extends LaratrustTeam
     {
         return $this->hasMany(Quotation::class);
     }
+
+    /**
+     * Finding Sequence Type
+     */
+    public function findSequenceType($type)
+    {
+        return $this->sequences()->where('sequence_type', $type)->firstOrFail();
+    }
 }

@@ -31,7 +31,7 @@ const props = defineProps(["quotation"]);
                     <tbody>
                         <tr v-for="x in quotation" :key="x.quotation_id">
                             <td>
-                                <a :href="route('quotation.edit', x.quotation_id)">{{ x.quotation_id }}</a>
+                                <a :href="route('quotation.edit', x.id)">{{ x.id }}</a>
                                 <template v-if="x.lead_id"><br><small><a :href="route('lead.edit', x.lead_id)" target="_blank">(Lead: {{ x.lead_id }})</a></small></template>
                             </td>
                             <td>
@@ -44,12 +44,10 @@ const props = defineProps(["quotation"]);
 
                             </td>
                             <td>
-                                {{ amountFormat(x.quotation_grandTotal) }}
-                                <br><small>{{ amountFormat(x.quotation_total) }} ({{ amountFormat(x.quotation_sst) }} @ {{ x.quotation_sstPct }}%)</small>
                             </td>
                             <td>{{ TimeToString(x.created_at) }}</td>
-                            <td><a :href="route('quotation.edit', x.quotation_id)">Edit</a></td>
-                            <td><a :href="route('quotation.pdf', x.quotation_id)">PDF</a></td>
+                            <td><a :href="route('quotation.edit', x.id)">Edit</a></td>
+                            <td><a :href="route('quotation.pdf', x.id)">PDF</a></td>
                         </tr>
                     </tbody>
                 </table>

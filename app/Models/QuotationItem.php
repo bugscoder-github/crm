@@ -40,6 +40,68 @@ class QuotationItem extends Model
     ];
 
     /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'item_type',
+        'service_id',
+        'name',
+        'description',
+        'quantity',
+        'unit_amount',
+        'discount_amount',
+        'sub_total',
+        'line_amount',
+        'is_enabled'
+    ];
+
+    // /**
+    //  * Interact with the sub total
+    //  */
+    // protected function subTotal(): Attribute
+    // {
+    //     return Attribute::make(
+    //         get: fn (string $value) => $value / 100,
+    //         set: fn (string $value) => $value * 100,
+    //     );
+    // }
+
+    // /**
+    //  * Interact with the unit amount
+    //  */
+    // protected function unitAmount(): Attribute
+    // {
+    //     return Attribute::make(
+    //         get: fn (string $value) => $value / 100,
+    //         set: fn (string $value) => $value * 100,
+    //     );
+    // }
+
+    // /**
+    //  * Interact with the discount amount
+    //  */
+    // protected function discountAmount(): Attribute
+    // {
+    //     return Attribute::make(
+    //         get: fn (string $value) => $value / 100,
+    //         set: fn (string $value) => $value * 100,
+    //     );
+    // }
+
+    // /**
+    //  * Interact with the line amount
+    //  */
+    // protected function lineAmount(): Attribute
+    // {
+    //     return Attribute::make(
+    //         get: fn (string $value) => $value / 100,
+    //         set: fn (string $value) => $value * 100,
+    //     );
+    // }
+
+    /**
      * Relationship belongs to quotation
      */
     public function quotation() :BelongsTo

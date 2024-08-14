@@ -87,20 +87,48 @@ class QuotationController extends Controller {
 	public function update(QuotationRequest $request, Quotation $quotation) {
 		$result = $this->save($request, $quotation);
 
-        return $this->goto($result->quotation_id, "Quotation updated succesfully.");
+        return $this->goto($result->id, "Quotation updated succesfully.");
 	}
 
 	public function save(QuotationRequest $request, Quotation $quotation = null) {
-		$data = $request->validated();
+		$team = me()->currentTeam();
 		
-		dd($data);
+		$data = $request->validated();
+
+		$quotationData = CalculationService::estimate(
+            $data,
+			$team
+		);
+		$quotationData = collect($quotationData);
+
+		$sequence = $team->findSequenceType('quotation');
+
+		$quotationData['quotation_number'] = $sequence->prefix . $sequence->number . $sequence->suffix;
+		
+        // Create Quotation
+		$quotation = $team->quotations()->create($quotationData->except('items')->toArray());
+
+		// Update Sequence Running Numbers
+		$sequence->update([
+            'number' => $sequence->number + 1
+        ]);
+
+		$items = $quotationData->only('items')->toArray()['items'];
+
+		// Setup Item Data
+        foreach ($items as $item) {
+            $item = collect($item);
+
+            // Create Quotation Items
+            $quotation->items()->create($item->toArray());
+        }
 
 		return $quotation;
 	}
 
 	public function goto($id, $message) {
         return redirect()
-            ->route("quotation.edit", $id)
+            ->route("quotation.edit", ['quotation' => $id])
             ->withInput()
             ->with("success", $message);
 	}

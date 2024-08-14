@@ -11,6 +11,18 @@ class Sequence extends Model
     use HasFactory;
 
     /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'sequence_type',
+        'prefix',
+        'number',
+        'suffix',
+    ];
+
+    /**
      * Relationship belongs to team
      */
     public function team() :BelongsTo

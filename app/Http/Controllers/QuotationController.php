@@ -17,6 +17,14 @@ class QuotationController extends Controller {
 	 * Display a listing of the resource.
 	 */
 	public function index() {
+		// $string = '{"lead_id":1,"currency":"MYR","items":[{"item_type":"service","service_id":1,"name":null,"description":null,"quantity":3,"unit_amount":0,"is_enabled":true},{"item_type":"service","service_id":3,"name":null,"description":null,"quantity":2,"unit_amount":0,"is_enabled":true},{"item_type":"service","service_id":5,"name":null,"description":null,"quantity":4,"unit_amount":0,"is_enabled":true}]}';
+		// $data = json_decode($string, true);
+		// dd(
+		// 	CalculationService::estimate(
+		// 		$data,
+		// 		me()->currentTeam()
+		// 	)
+		// );
 		return Inertia::render("Quotation/Index", [
 			"quotation" => me()->currentTeam()->quotations()->orderBy('id', 'desc')->get()
 		]);
@@ -100,6 +108,7 @@ class QuotationController extends Controller {
 			$team
 		);
 		$quotationData = collect($quotationData);
+		$discounts = $quotationData->only('discounts');
 
 		$sequence = $team->findSequenceType('quotation');
 
@@ -113,14 +122,33 @@ class QuotationController extends Controller {
             'number' => $sequence->number + 1
         ]);
 
+		// Create Customer Discounts
+		foreach ($discounts as $key => $discount) {
+            $discount['quotation_discount_type'] = 'quotation';
+            $discount['quotation_discount_id'] = $quotation->id;
+            $quotation->discounts()->create($discount);
+        }
+
 		$items = $quotationData->only('items')->toArray()['items'];
 
 		// Setup Item Data
         foreach ($items as $item) {
             $item = collect($item);
 
+			// Get Item Discounts
+            $itemDiscount = $item->pull('discounts');
+
             // Create Quotation Items
-            $quotation->items()->create($item->toArray());
+            $quotationItem = $quotation->items()->create($item->toArray());
+
+			// Create Item Discount
+            if ($itemDiscount) {
+                foreach ($itemDiscount as $discount) {
+                    $discount['quotation_discount_type'] = 'quotation_item';
+                    $discount['quotation_discount_id'] = $quotationItem->id;
+                    $quotation->discounts()->create($discount);
+                }
+            }
         }
 
 		return $quotation;

@@ -40,6 +40,14 @@ class Team extends LaratrustTeam
     }
 
     /**
+     * Relationship has many discounts
+     */
+    public function discounts() :HasMany
+    {
+        return $this->hasMany(Discount::class);
+    }
+
+    /**
      * Relationship has many currencies
      */
     public function currencies() :HasMany

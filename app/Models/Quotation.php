@@ -75,49 +75,49 @@ class Quotation extends Model
         'total_amount'
     ];
     
-    // /**
-    //  * Interact with the sub total
-    //  */
-    // protected function subTotal(): Attribute
-    // {
-    //     return Attribute::make(
-    //         get: fn (string $value) => $value / 100,
-    //         set: fn (string $value) => $value * 100,
-    //     );
-    // }
+    /**
+     * Interact with the sub total
+     */
+    protected function subTotal(): Attribute
+    {
+        return Attribute::make(
+            get: fn (string $value) => $value / 100,
+            set: fn (string $value) => $value * 100,
+        );
+    }
 
-    // /**
-    //  * Interact with the total discount
-    //  */
-    // protected function totalDiscount(): Attribute
-    // {
-    //     return Attribute::make(
-    //         get: fn (string $value) => $value / 100,
-    //         set: fn (string $value) => $value * 100,
-    //     );
-    // }
+    /**
+     * Interact with the total discount
+     */
+    protected function totalDiscount(): Attribute
+    {
+        return Attribute::make(
+            get: fn (string $value) => $value / 100,
+            set: fn (string $value) => $value * 100,
+        );
+    }
 
-    // /**
-    //  * Interact with the total tax
-    //  */
-    // protected function totalTax(): Attribute
-    // {
-    //     return Attribute::make(
-    //         get: fn (string $value) => $value / 100,
-    //         set: fn (string $value) => $value * 100,
-    //     );
-    // }
+    /**
+     * Interact with the total tax
+     */
+    protected function totalTax(): Attribute
+    {
+        return Attribute::make(
+            get: fn (string $value) => $value / 100,
+            set: fn (string $value) => $value * 100,
+        );
+    }
 
-    // /**
-    //  * Interact with the total amount
-    //  */
-    // protected function totalAmount(): Attribute
-    // {
-    //     return Attribute::make(
-    //         get: fn (string $value) => $value / 100,
-    //         set: fn (string $value) => $value * 100,
-    //     );
-    // }
+    /**
+     * Interact with the total amount
+     */
+    protected function totalAmount(): Attribute
+    {
+        return Attribute::make(
+            get: fn (string $value) => $value / 100,
+            set: fn (string $value) => $value * 100,
+        );
+    }
 
     /**
      * Relationship has many quotation invoices

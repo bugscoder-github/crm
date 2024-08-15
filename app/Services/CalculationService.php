@@ -1,6 +1,9 @@
 <?php
 namespace App\Services;
 
+use App\Models\DiscountCode;
+use Carbon\Carbon;
+
 class CalculationService
 {
     public static function estimate($data, $team, $isNumberFormat = true)
@@ -62,12 +65,12 @@ class CalculationService
                     $data['items'][$key]['line_amount'] = $data['items'][$key]['unit_amount'] * $item['quantity'];
                     
                     // Discount Based on Item
-                    // $serviceDiscount = $this->isValidDiscount(
-                    //     $service->discounts, 
-                    //     $data['items'][$key]['line_amount']
-                    // );
-                    // $data['items'][$key]['discount_amount'] = $serviceDiscount['totalDiscount'];
-                    // $data['items'][$key]['discounts'] = $serviceDiscount['discounts'];
+                    $serviceDiscount = static::isValidDiscount(
+                        $service->discounts, 
+                        $data['items'][$key]['line_amount']
+                    );
+                    $data['items'][$key]['discount_amount'] = $serviceDiscount['totalDiscount'];
+                    $data['items'][$key]['discounts'] = $serviceDiscount['discounts'];
 
                     // Discount Based on Categories
                     // $serviceCategoryDiscount = $this->isValidDiscount(
@@ -80,7 +83,7 @@ class CalculationService
                     //     $serviceCategoryDiscount['discounts']
                     // );
 
-                    // $data['items'][$key]['line_amount'] -= $data['items'][$key]['discount_amount'];
+                    $data['items'][$key]['line_amount'] -= $data['items'][$key]['discount_amount'];
                 }
             } else {
                 $data['items'][$key]['line_amount'] = $item['unit_amount'] * $item['quantity'];
@@ -110,8 +113,17 @@ class CalculationService
             }
         }
 
+        // Get All Discount
+        $customerDiscount = static::isValidDiscount(
+            $team->discounts()->where('discount_apply_type', 'all')->get(), 
+            $data['sub_total']
+        );
+        $data['sub_total'] -= $customerDiscount['totalDiscount'];
+        $data['total_discount'] += $customerDiscount['totalDiscount'];
+        $data['discounts'] = $customerDiscount['discounts'];
+
         // Get Customer Discount
-        // $customerDiscount = $this->isValidDiscount(
+        // $customerDiscount = static::isValidDiscount(
         //     $customer->discounts, 
         //     $data['sub_total']
         // );
@@ -120,17 +132,17 @@ class CalculationService
         // $data['discounts'] = $customerDiscount['discounts'];
 
         // Get Discount Code
-        // $getDiscountCode = $this->isValidDiscountCode(
-        //     $team,
-        //     $data['discount_code'], 
-        //     $data['sub_total']
-        // );
-        // $data['sub_total'] -= $getDiscountCode['totalDiscount'];
-        // $data['total_discount'] += $getDiscountCode['totalDiscount'];
-        // $data['discounts'] = array_merge(
-        //     $data['discounts'],
-        //     $getDiscountCode['discounts']
-        // );
+        $getDiscountCode = static::isValidDiscountCode(
+            $team,
+            $data['discount_code'] ?? null, 
+            $data['sub_total']
+        );
+        $data['sub_total'] -= $getDiscountCode['totalDiscount'];
+        $data['total_discount'] += $getDiscountCode['totalDiscount'];
+        $data['discounts'] = array_merge(
+            $data['discounts'] ?? [],
+            $getDiscountCode['discounts']
+        );
         
         $data['total_amount'] = $data['sub_total'] - $data['total_discount'];
 
@@ -244,7 +256,7 @@ class CalculationService
         return $result;
     }
 
-    protected function isValidDiscount($discountData, $amount)
+    protected static function isValidDiscount($discountData, $amount)
     {
         $discounts = [];
         $totalDiscount = 0;
@@ -283,7 +295,7 @@ class CalculationService
         ];
     }
 
-    protected function isValidDiscountCode($team, $discountCode, $amount)
+    protected static function isValidDiscountCode($team, $discountCode, $amount)
     {
         $discounts = [];
         $totalDiscount = 0;

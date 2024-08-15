@@ -86,7 +86,7 @@ class QuotationController extends Controller {
 			]);
 		}
 
-        return $this->goto($result->quotation_id, "Quotation created succesfully.");
+        return $this->goto($result->id, "Quotation created succesfully.");
 	}
 
 	/**

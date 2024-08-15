@@ -135,7 +135,7 @@
 								</div>
 							</div>
 							
-							<button type="submit" class="btn btn-info" @click="save()">Create</button>&nbsp;
+							<button type="submit" class="btn btn-info">Create</button>&nbsp;
 							<a :href="route('quotation.pdf', form.id)" v-if="form.id">PDF</a>
 						</form>
 					</div>
@@ -175,6 +175,7 @@ export default {
 
     components: {
 		Head,
+		useForm,
 		ItemModal,
 		ItemTemplateModal,
 		AuthenticatedLayout
@@ -189,24 +190,15 @@ export default {
         this.estimate();
     },
     methods: {
-        save() {
-            let t = this;
-            t.errors = {};
-
+		handleSubmit() {
 			if (this.form.id) {
-				return axios.put(route('quotation.update', { id: t.form.id }), this.form)
-					.then((response) => {
-					}).catch((e) => {
-					
-					});
+				useForm(this.form).put(route('quotation.update', { id: t.form.id }), {
+				});
 			} else {
-				return axios.post(route('quotation.store'), this.form)
-					.then((response) => {
-					}).catch((e) => {
-					
-					});
+				useForm(this.form).post(route('quotation.store'), {
+				});
 			};
-        },
+		},
         deleteItem(key) {
             this.form.items.splice(key, 1);
             this.estimate();

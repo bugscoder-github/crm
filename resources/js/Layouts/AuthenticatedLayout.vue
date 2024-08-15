@@ -8,6 +8,10 @@ import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import { Link } from '@inertiajs/vue3';
 
 const showingNavigationDropdown = ref(false);
+
+const navClass = (role_name) => {
+  return "main-header navbar navbar-expand navbar-white navbar-light role-"+role_name.toLowerCase();
+}
 </script>
 
 <template>
@@ -16,7 +20,7 @@ const showingNavigationDropdown = ref(false);
 			<img class="animation__shake" src="/img/AdminLTELogo.png" alt="AdminLTELogo" height="60" width="60">
 		</div> -->
 
-        <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+        <nav :class="navClass($page.props.auth.user.roles[0].name)">
     <!-- Left navbar links -->
     <ul class="navbar-nav">
       <li class="nav-item">
@@ -27,9 +31,6 @@ const showingNavigationDropdown = ref(false);
       </li><li class="nav-item d-none d-sm-inline-block">
         <a href="/changelog" class="nav-link" target="_blank">Changelog</a>
       </li>
-      <!-- <li class="nav-item d-none d-sm-inline-block">
-        <a href="#" class="nav-link">Contact</a>
-      </li> -->
     </ul>
 
     <!-- Right navbar links -->
@@ -144,9 +145,14 @@ const showingNavigationDropdown = ref(false);
           <i class="fas fa-th-large"></i>
         </a>
       </li> -->
+      <li class="nav-item d-none d-sm-inline-block">
+        <div class="nav-link" style="color:#000">Branch: {{ me($page)['teams']['name'] }}</div>
+      </li>
       <li class="nav-item dropdown">
         <a class="nav-link" data-toggle="dropdown" href="#">
-			{{ $page.props.auth.user.name }} <i class="fas fa-angle-down right ml-2"></i>
+			{{ $page.props.auth.user.name }}&nbsp;
+      <div v-if="$page.props.auth.user.roles[0].name" :class="getRoleClass($page.props.auth.user.roles[0].name)">{{ $page.props.auth.user.roles[0].name }}</div>
+      <i class="fas fa-angle-down right ml-2"></i>
 		</a>
         <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
                                         <Link :href="route('logout')" method="post" as="button">Log Out</Link>
@@ -215,7 +221,25 @@ const showingNavigationDropdown = ref(false);
                     </li>
                 </ul>
             </li>
-          	<li class="nav-item menu-open" v-if="isAdmin($page)">
+            <li class="nav-item menu-open">
+                <a href="#" class="nav-link "> <i class="nav-icon fas fa-address-card"></i>
+                    <p>Invoice
+                		<i class="fas fa-angle-left right"></i></p>
+                </a>
+                <ul class="nav nav-treeview">
+                    <li class="nav-item">
+                        <Link :href="route('invoice.index')" class="nav-link ">
+                             <i class="nav-icon fas"></i><p>List</p>
+                        </Link>
+                    </li>
+                    <li class="nav-item">
+                        <Link :href="route('invoice.create')" class="nav-link">
+                             <i class="nav-icon fas"></i><p>New</p>
+                        </Link>
+                    </li>
+                </ul>
+            </li>
+          	<li class="nav-item menu-open" v-if="isAdmin($page) || isOwner($page)">
                 <a href="#" class="nav-link "> <i class="nav-icon fas fa-user"></i>
                     <p>Users
                 		<i class="fas fa-angle-left right"></i></p>
@@ -228,6 +252,24 @@ const showingNavigationDropdown = ref(false);
                     </li>
                     <li class="nav-item">
                         <Link :href="route('user.create')" class="nav-link">
+                             <i class="nav-icon fas"></i><p>New</p>
+                        </Link>
+                    </li>
+                </ul>
+            </li>
+            <li class="nav-item menu-open" v-if="isOwner($page)">
+                <a href="#" class="nav-link "> <i class="nav-icon fas fa-user"></i>
+                    <p>Team
+                		<i class="fas fa-angle-left right"></i></p>
+                </a>
+                <ul class="nav nav-treeview">
+                    <li class="nav-item">
+                        <Link :href="route('team.index')" class="nav-link ">
+                             <i class="nav-icon fas"></i><p>List</p>
+                        </Link>
+                    </li>
+                    <li class="nav-item">
+                        <Link :href="route('team.create')" class="nav-link">
                              <i class="nav-icon fas"></i><p>New</p>
                         </Link>
                     </li>

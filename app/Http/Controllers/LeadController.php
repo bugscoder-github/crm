@@ -13,15 +13,18 @@ use Spatie\Activitylog\Models\Activity;
 
 class LeadController extends Controller {
     public function index() {
-        $leads = Lead::selectRaw('leads.*, users.name')->leftJoin("users", function ($join) {
-            $join->on("users.id", "=", "leads.user_id");
-        })->orderBy('lead_id', 'desc');
-        if (!isAdmin()) {
-            $leads = $leads->where("user_id", "=", auth()->user()->id);
+        $leads = Lead::with('user');
+        if (!isOwner()) {
+            $leads = $leads->whereHas('user', function($query) {
+                $query->where('current_team_id', me()->current_team_id);
+            });
+        }
+        if (!isAdminOrOwner()) {
+            $leads = $leads->where("user_id", me()->id);
         }
 
         return Inertia::render("Lead/Index", [
-            "leads" => $leads->get(),
+            "leads" => $leads->latest()->get(),
         ]);
     }
 
@@ -30,16 +33,20 @@ class LeadController extends Controller {
     }
 
     public function edit(Lead $lead) {
+        // dd($lead->user_id);
+        if (!isAdminOrOwner() && !isMine($lead->user_id)) { abort(403); }
+
         if (isMine($lead->user_id) && $lead->read_at == null) {
-            $lead->update(["read_at" => now()]);
-            LeadService::leadLog($lead->lead_id, "Lead read by assigned person");
+            $lead->update([
+                "read_at" => now(),
+                "lead_status" => 2
+            ]);
+            // LeadService::leadLog($lead->lead_id, "Lead read by assigned person");
         }
 
         $lead["comment"] = LeadComment::orderBy('leadComment_id', 'desc')->where("lead_id", $lead->lead_id)->get();
         $userId = $lead["comment"]->pluck("user_id");
         $userList = User::whereIn("id", $userId)->get()->makeHidden(['password']);
-        // $userList = $userList->toArray();
-        // dd($userList[0]);
         foreach($lead['comment'] as $key => $value) {
         	$name = "";
          	$role = "";
@@ -57,21 +64,21 @@ class LeadController extends Controller {
          	);
         }
 
-
-        // $lead["commentUser"] = $userList;
-
         return $this->renderForm($lead);
     }
 
     public function renderForm(Lead $lead = null) {
         $lead = ($lead == null) ? new Lead() : $lead;
+        $user = [me()];
+        if (isAdminOrOwner()) {
+            $user = User::where('current_team_id', me()->current_team_id)->whereHasRole('Sales')->get();
+        }
 
         return Inertia::render("Lead/Form", [
             "log" => $lead->lead_id > 0 ? Activity::whereRaw("log_name = 'lead' and subject_id = '{$lead->lead_id}'")->get() : [],
             "lead" => $lead,
-            "users" => isAdmin() ? User::all() : [me()],
+            "users" => $user,
             "meta" => [
-                // "users" => isAdmin() ? User::all() : [me()],
                 "sources" => getConfig("custom.lead.source"),
             ],
             "success" => session("success") ?? "",
@@ -128,17 +135,23 @@ class LeadController extends Controller {
         return $lead;
     }
 
-    public function leadMarkDone($leadId) {
-		$result = Lead::findOrFail($leadId);
-        if ($result == false) { return; }
-		$result->update(['done_at' => now()]);
+    public function leadMarkDone(Lead $lead) {
+		// $result = Lead::findOrFail($leadId);
+        // if ($result == false) { return; }
+		$lead->update([
+            'done_at' => now(),
+            'lead_status' => 4
+        ]);
         // LeadService::leadLog($leadId, "Lead marked as done.");
 	}
 
-    public function leadReopen($leadId) {
-		$result = Lead::findOrFail($leadId);
-        if ($result == false) { return; }
-		$result->update(['done_at' => null]);
+    public function leadReopen(Lead $lead) {
+		// $result = Lead::findOrFail($leadId);
+        // if ($result == false) { return; }
+		$lead->update([
+            'done_at' => null,
+            'lead_status' => 3
+        ]);
         // LeadService::leadLog($leadId, "Lead reopened.");
 	}
 }

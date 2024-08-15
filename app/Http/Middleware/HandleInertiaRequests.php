@@ -34,7 +34,7 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             'auth' => ['user' => $request->user()],
-            'isAdmin' => $request->user() ? $request->user()->isAdmin() : false,
+            // 'isAdmin' => $request->user() ? $request->user()->isAdmin() : false,
             'auth.user' => fn () => $request->user() ? $request->user()->load('roles.permissions') : null,
             'user.roles' => $request->user() ? $request->user()->roles->pluck('name') : [],
             'user.permissions' => $request->user() ? $request->user()->getAllPermissionsAttribute()->pluck('name') : [],

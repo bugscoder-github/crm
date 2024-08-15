@@ -57,3 +57,8 @@ input[type=number] {
 	background-color: rgba(0,0,0,.05);
 	padding: 0.5rem;
 }
+
+nav.main-header.role-admin { border-bottom-color: #17a2b8 !important; }
+nav.main-header.role-owner { border-bottom-color: #dc3545 !important; }
+nav.main-header.role-sales { border-bottom-color: #28a745 !important; }
+nav.main-header.role-service { border-bottom-color: #ffc107 !important; }

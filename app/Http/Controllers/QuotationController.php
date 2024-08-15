@@ -58,7 +58,17 @@ class QuotationController extends Controller {
 		}
 
 		$quotation['lead_id'] = $lead->lead_id ?? null;
-		$quotation['items'] = $quotation->items;
+		$items = $quotation->items;
+		// Amend Items For Vue Select Use
+		foreach ($items as $key => $item) {
+            $items[$key]['discounts'] = $item->discounts()->select([
+                'name',
+                'description',
+                'discount_type',
+                'amount',
+            ])->get();
+        }
+		$quotation['items'] = $items;
 		$quotation['discounts'] = $quotation->discounts;
 
 		// TODO: To be adjusted

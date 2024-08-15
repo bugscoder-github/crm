@@ -9,6 +9,9 @@ export default {
     TimeToString: function (timestamp) {
       return moment(timestamp).format("DD MMM, YYYY HH:mm");
     },
+    me: function (t) {
+      return t.props.auth.user;
+    },
     isAdmin: function (t) {
       return t.props.auth.user.roles[0].name == 'Admin';
     },

@@ -31,9 +31,6 @@ const navClass = (role_name) => {
       </li><li class="nav-item d-none d-sm-inline-block">
         <a href="/changelog" class="nav-link" target="_blank">Changelog</a>
       </li>
-      <!-- <li class="nav-item d-none d-sm-inline-block">
-        <a href="#" class="nav-link">Contact</a>
-      </li> -->
     </ul>
 
     <!-- Right navbar links -->
@@ -148,6 +145,9 @@ const navClass = (role_name) => {
           <i class="fas fa-th-large"></i>
         </a>
       </li> -->
+      <li class="nav-item d-none d-sm-inline-block">
+        <div class="nav-link" style="color:#000">Branch: {{ me($page)['teams']['name'] }}</div>
+      </li>
       <li class="nav-item dropdown">
         <a class="nav-link" data-toggle="dropdown" href="#">
 			{{ $page.props.auth.user.name }}&nbsp;
@@ -257,7 +257,7 @@ const navClass = (role_name) => {
                     </li>
                 </ul>
             </li>
-            <li class="nav-item menu-open" v-if="isAdmin($page)">
+            <li class="nav-item menu-open" v-if="isOwner($page)">
                 <a href="#" class="nav-link "> <i class="nav-icon fas fa-user"></i>
                     <p>Team
                 		<i class="fas fa-angle-left right"></i></p>

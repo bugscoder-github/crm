@@ -78,7 +78,6 @@ class User extends Authenticatable implements LaratrustUser
     // {
     //     return $this->hasRole('Owner') || $this->hasRole('Admin');
     // }
-
     public function lead(): HasMany {
         return $this->hasMany(Lead::class);
     }

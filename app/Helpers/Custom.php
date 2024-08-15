@@ -53,6 +53,12 @@ if (!function_exists('isOwner')) {
 	}
 }
 
+if (!function_exists('isAdminOrOwner')) {
+	function isAdminOrOwner() {
+		return (me()->hasRole('Owner') || me()->hasRole('Admin'));
+	}
+}
+
 if (!function_exists('isMine')) {
 	function isMine($id) {
 		if ($id == me()->id) { return true; }

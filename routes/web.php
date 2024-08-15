@@ -64,8 +64,8 @@ Route::prefix('_backend')->middleware(['auth', 'verified'])->group(function () {
     Route::resources(['lead' => LeadController::class]);
 	Route::resources(['lead.comment' => LeadCommentController::class]);
 	Route::resources(['leadComment'  => LeadCommentController::class]);
-	Route::post('lead/{id}/done', [LeadController::class, 'leadMarkDone'])->name('lead.done');
-	Route::post('lead/{id}/reopen', [LeadController::class, 'leadReopen'])->name('lead.reopen');
+	Route::post('lead/{lead}/done', [LeadController::class, 'leadMarkDone'])->name('lead.done');
+	Route::post('lead/{lead}/reopen', [LeadController::class, 'leadReopen'])->name('lead.reopen');
 
     Route::get('quotation/{quotation}/pdf', [QuotationController::class, 'pdf'])->name('quotation.pdf');
     Route::resources(['quotation' => QuotationController::class]);

@@ -61,7 +61,7 @@
 			</template>
 		</div>
 
-		<!-- {{  props.log }} -->
+		<!-- {{  props.users }} -->
 
 		<section class="content">
 			<div class="container-fluid">
@@ -186,7 +186,7 @@
 									<div class="card-body">
 									</div>
 								</div> -->
-								<div class="card-footer" v-if="props.lead.lead_status != 3">
+								<div class="card-footer" v-if="props.lead.lead_status != 4">
 									<button type="submit" class="btn btn-info">
 										<template v-if="!props.lead.lead_id" >Create</template >
 										<template v-else>Update</template>
@@ -203,7 +203,7 @@
 							</div>
 							<form @submit.prevent="handleCommentSubmit">
 								<div class="card-body">
-									<div class="form-group row" v-if="props.lead.lead_status != 3">
+									<div class="form-group row" v-if="props.lead.lead_status != 4">
 										<div class="input-group">
 											<input type="text" class="form-control" v-model=" form.leadComment_comment " id="lead_comment" />
 											<span class="input-group-append"> <button type="submit" class="btn btn-info btn-flat" > Update </button> </span>
@@ -239,7 +239,7 @@
 									</li>
 									<li class="mr-2">&nbsp;|&nbsp;</li>
                   					<li class="nav-item">
-                       					<Link v-if="props.lead.lead_status != 3" class="done_btn" method="post" as="button" onclick="return confirm('Are you sure?')" :href="route('lead.done', props.lead.lead_id)">Mark as Done</Link>
+                       					<Link v-if="props.lead.lead_status != 4" class="done_btn" method="post" as="button" onclick="return confirm('Are you sure?')" :href="route('lead.done', props.lead.lead_id)">Mark as Done</Link>
                             			<div v-else>Done ( <Link method="post" class="done_btn" as="button" onclick="return confirm('Are you sure?')" :href="route('lead.reopen', props.lead.lead_id)">Reopen</Link> )</div>
                             		</li>
                   <!-- <li class="nav-item dropdown">

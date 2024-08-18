@@ -65,6 +65,8 @@
 
 		<section class="content">
 			<div class="container-fluid">
+
+<form @submit.prevent="handleSubmit" :class="disableInput()" id="basic_information">
 				<div class="row">
 					<div :class="halfOrFullWidth()">
 						<div class="card">
@@ -75,7 +77,6 @@
 								</div>
 								
 							</div>
-							<form @submit.prevent="handleSubmit" :class="disableInput()" id="basic_information">
 								<input type="hidden" v-model="form.customer_id">
 								<div class="card-body">
 									<div class="form-group row">
@@ -192,7 +193,6 @@
 										<template v-else>Update</template>
 									</button>
 								</div>
-							</form>
 						</div>
 					</div>
 
@@ -201,12 +201,12 @@
 							<div class="card-header">
 								<span class="card-title">Follow Up</span>
 							</div>
-							<form @submit.prevent="handleCommentSubmit">
+							<!-- <form @submit.prevent="handleCommentSubmit"> -->
 								<div class="card-body">
 									<div class="form-group row" v-if="props.lead.lead_status != 4">
 										<div class="input-group">
-											<input type="text" class="form-control" v-model=" form.leadComment_comment " id="lead_comment" />
-											<span class="input-group-append"> <button type="submit" class="btn btn-info btn-flat" > Update </button> </span>
+											<input type="text" class="form-control" v-model="form.leadComment_comment" id="leadComment_comment" />
+											<!-- <span class="input-group-append"> <button type="submit" class="btn btn-info btn-flat" > Update </button> </span> -->
 										</div>
 										<ul id="commentTemplate" class="mt-1">
 											<li @click=" usePresetComment( 'Called no answer.', ) " class="btn btn-secondary btn-xs" > Called no answer. </li>
@@ -253,10 +253,13 @@
                     </div>
                   </li> -->
                 </ul></div>
-							</form>
+							<!-- </form> -->
 						</div>
 					</div>
+
+
 				</div>
+			</form>
 				<div class="row">
 					<div class="col-md-12">
 						<div class="card" v-if="props.log?.length > 0">
@@ -271,8 +274,24 @@
 									</thead>
 									<tbody>
 										<tr v-for="x in props.log">
-											<td class="col-md-2">{{ TimeToString(x.created_at) }}</td>
-												<td v-html="tidyActivityLog(x)"></td>
+											<!-- <td class="col-2">{{ TimeToString(x.created_at) }}</td>
+											<td v-html="tidyActivityLog(x)"></td> -->
+											<td class="col-2">{{ TimeToString(x.datetime) }}</td>
+											<td>
+												{{ x.action }}
+												<template v-if="x.details.length != 0">
+													<div class="col-12 row">
+														<div class="col-2"></div>
+														<div class="col-5">Old</div>
+														<div class="col-5">New</div>
+													</div>
+													<div class="col-12 row" v-for="y, z in x.details">
+														<div class="col-2">{{ z }}</div>
+														<div class="col-5">{{ y.old }}</div>
+														<div class="col-5">{{ y.new }}</div>
+													</div>
+												</template>
+											</td>
 										</tr>
 									</tbody>
 								</table>
@@ -354,13 +373,13 @@ const form = useForm({
 });
 
 const disableInput = () => {
-	if (props.lead?.lead_status == 3) {
+	if (props.lead?.lead_status == 4) {
 		return "disableInput";
 	}
 };
 
 const handleSubmit = () => {
-	if (props.lead.lead_status == 3) { return; }
+	if (props.lead.lead_status == 4) { return; }
 	if (props.lead.lead_id) {
 		form.put(route("lead.update", props.lead.lead_id));
 	} else {

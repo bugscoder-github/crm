@@ -22,7 +22,7 @@ class LeadRequest extends FormRequest {
     public function authorize(): bool {
     	$isAuth = true;
 
-    	if (request()->routeIs('user.update') && (isAdmin() == false && $this->isMine == false)) { $isAuth = false; }
+    	if (request()->routeIs('lead.update') && (isAdmin() == false && $this->isMine == false)) { $isAuth = false; }
 
         return $isAuth;
     }
@@ -32,9 +32,8 @@ class LeadRequest extends FormRequest {
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
-    public function rules(): array
-    {
-        return [
+    public function rules(): array {
+		$rules = [
 			// 'customer_id' => [],
 			'lead_companyName' => [],
         	'lead_name' => [],
@@ -46,7 +45,13 @@ class LeadRequest extends FormRequest {
 			'lead_remark' => [],
 			'lead_premiseType' => [],
 			'lead_serviceType' => [],
-        	'user_id' => []
-        ];
+        	'user_id' => [],
+		];
+
+		if (request()->routeIs('lead.update')) {
+			$rules['leadComment_comment'] = [];
+		}
+
+		return $rules;
     }
 }

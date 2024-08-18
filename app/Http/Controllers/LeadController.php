@@ -74,8 +74,11 @@ class LeadController extends Controller {
             $user = User::where('current_team_id', me()->current_team_id)->whereHasRole('Sales')->get();
         }
 
+        // dd(Activity::whereRaw("log_name = 'lead' and subject_id = '{$lead->lead_id}'")->get()->toArray());
+
         return Inertia::render("Lead/Form", [
-            "log" => $lead->lead_id > 0 ? Activity::whereRaw("log_name = 'lead' and subject_id = '{$lead->lead_id}'")->get() : [],
+            // "log" => $lead->lead_id > 0 ? Activity::whereRaw("log_name = 'lead' and subject_id = '{$lead->lead_id}'")->get() : [],
+            "log" => $this->leadLog($lead->lead_id),
             "lead" => $lead,
             "users" => $user,
             "meta" => [
@@ -83,6 +86,44 @@ class LeadController extends Controller {
             ],
             "success" => session("success") ?? "",
         ]);
+    }
+
+    public function leadLog($id = null) {
+        $array = [];
+        if ($id == null) { return $array; }
+
+        $activity = Activity::whereRaw("log_name = 'lead' and subject_id = '{$id}'")->get()->toArray();
+        foreach($activity as $key => $value) {
+            $diff = isset($value['properties']['old']) ? jsonDiff($value['properties']['attributes'], $value['properties']['old']) : [];
+            unset($diff['lead_updatedAt']);
+
+            if (count($diff) == 1 && isset($diff['lead_status'])) {
+                if ($diff['lead_status']['new'] == 2) { $value['description'] = 'Read'; }
+                if ($diff['lead_status']['new'] == 3) { $value['description'] = $diff['lead_status']['old'] == 4 ? 'Unlocked' : 'WIP'; }
+                if ($diff['lead_status']['new'] == 4) { $value['description'] = 'Marked as Done'; }
+
+                unset($diff['lead_status']);
+            }
+
+            if ($value['description'] == 'updated' && empty($diff)) { continue; }
+
+            $newDiff = [];
+            foreach($diff as $k => $v) {
+                $k = str_replace('lead_', '', $k);
+                $newKey = ucwords(implode(' ', preg_split('/(?=[A-Z])/', $k)));
+                $newDiff[$newKey] = $v;
+            }
+
+            $array[] = array(
+                'datetime' => $value['created_at'],
+                'action' => ucwords($value['description']),
+                'details' => $newDiff
+            );
+        }
+
+        // dd($array);
+
+        return $array;
     }
 
     //
@@ -109,10 +150,12 @@ class LeadController extends Controller {
 
     public function save(LeadRequest $request, Lead $lead = null) {
         $data = $request->validated();
-
         if ($lead) {
-            if ($lead->lead_status == 3) { return; }
-            $lead->update($data);
+            if ($lead->lead_status == 4) { return; }
+            $lead->update(collect($data)->except('leadComment_comment')->toArray());
+
+            $lead->leadComment()->create(collect($data)->only('leadComment_comment')->toArray());
+            // LeadComment::create()
         } else {
             $lead = LeadService::checkCustomerCreateLead($data);
         }

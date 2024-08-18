@@ -59,6 +59,23 @@ if (!function_exists('isAdminOrOwner')) {
 	}
 }
 
+if (!function_exists('jsonDiff')) {
+	function jsonDiff($new, $old) {
+        $diff = [];
+
+        foreach($new as $key => $value) {
+            if (isset($old[$key]) && $value != $old[$key]) {
+                $diff[$key] = array(
+                    "old" => $old[$key],
+                    "new" => $new[$key]
+                );
+            }
+        }
+
+        return $diff;
+    }
+}
+
 if (!function_exists('isMine')) {
 	function isMine($id) {
 		if ($id == me()->id) { return true; }

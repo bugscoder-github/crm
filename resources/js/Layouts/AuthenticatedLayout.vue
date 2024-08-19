@@ -5,13 +5,32 @@ import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
-import { Link } from '@inertiajs/vue3';
+import { usePage, Link } from '@inertiajs/vue3';
 
 const showingNavigationDropdown = ref(false);
 
 const navClass = (role_name) => {
   return "main-header navbar navbar-expand navbar-white navbar-light role-"+role_name.toLowerCase();
 }
+
+const page = usePage();
+const leadCount = ref(page.props.notifications ?? 0);
+
+const eventSource = new EventSource('/_backend/notifications');
+eventSource.onmessage = function(event) {
+    let data = JSON.parse(event.data);
+    console.log(data.count, " ", leadCount.value);
+    if (data.count > leadCount.value) {
+      leadCount.value = data.count;
+      
+      $(document).Toasts('create', {
+        class: 'bg-success',
+        title: 'New Lead',
+        subtitle: '',
+        body: 'New Lead Alert. <a href="/_backend/lead">Lead</a>'
+      })
+    }
+};
 </script>
 
 <template>
@@ -31,6 +50,9 @@ const navClass = (role_name) => {
       </li><li class="nav-item d-none d-sm-inline-block">
         <a href="/changelog" class="nav-link" target="_blank">Changelog</a>
       </li>
+        <!-- <li><button type="button" class="btn btn-success toastsDefaultSuccess">
+                  Launch Success Toast
+                </button></li> -->
     </ul>
 
     <!-- Right navbar links -->
@@ -193,7 +215,7 @@ const navClass = (role_name) => {
                     <li class="nav-item">
                         <Link :href="route('lead.index')" class="nav-link ">
                              <i class="nav-icon fas"></i><p>List</p>
-                             <span class="badge badge-info right">{{ $page.props.notifications }}</span>
+                             <span class="badge badge-info right">{{ leadCount }}</span>
                         </Link>
                     </li>
                     <li class="nav-item">

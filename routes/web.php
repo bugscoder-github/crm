@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 use App\Http\Middleware\BackendRedirect;
+use Illuminate\Support\Facades\Cache;
 
 // Route::get('/', function () {
 //     return Inertia::render('Welcome', [
@@ -77,6 +78,21 @@ Route::prefix('_backend')->middleware(['auth', 'verified'])->group(function () {
 
 	Route::resources(['metadata' => MetadataController::class]);
 
+	Route::get('/notifications', function () {
+		return response()->stream(function () {
+			if (isOwner()) {
+				$newLead = Cache::get('newLead_0');
+				if ($newLead) {
+					echo 'data: '.json_encode($newLead)."\n\n";
+					flush();
+				}
+			}
+		}, 200, [
+			'Content-Type' => 'text/event-stream',
+			'Cache-Control' => 'no-cache',
+			'Connection' => 'keep-alive',
+		]);
+	});
 
 	Route::get('datatables', [ServiceController::class, 'datatables'])->name('services.datatables');
     Route::resources(['services' => ServiceController::class]);
@@ -88,7 +104,6 @@ Route::prefix('_backend')->middleware(['auth', 'verified'])->group(function () {
     Route::resources(['quotation' => QuotationController::class]);
 
 	Route::post('estimate', [SharedController::class, 'estimate'])->name('shared.estimate');
-
 });
 
 

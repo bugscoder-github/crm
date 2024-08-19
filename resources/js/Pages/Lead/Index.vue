@@ -27,6 +27,7 @@ function doneClass(x = null) {
                 <Link :href="route('lead.create')" class="btn btn-primary mr-3">New</Link>
                 <b> {{ countNew }}</b> new out of {{ leads.length }} records.
                 	{{ countPen }} pending. {{ countWIP }} in progress. {{ countDone }} done.
+                <!-- New lead since last load. Click here to refresh. -->
                 <!-- <div class="card-tools">
 					<div class="input-group input-group-sm" style="width: 150px;">
 						<input type="text" name="table_search" class="form-control float-right" placeholder="Search">
@@ -58,7 +59,7 @@ function doneClass(x = null) {
                             <td>{{ x.lead_phone }}</td>
                             <td>{{ x.lead_location }}</td>
                             <td>
-                            	<template v-if="x.user.name">
+                            	<template v-if="x.user?.name">
                                     {{ x.user.name }}
                                     <small v-if="isOwner($page) && x.user.teams.name"><br>{{ x.user.teams.name }}</small>
                                 </template>

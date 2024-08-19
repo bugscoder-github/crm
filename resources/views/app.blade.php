@@ -31,6 +31,7 @@
 
 	<script src="/plugins/jquery/jquery.min.js"></script>
 	<script src="/plugins/jquery-ui/jquery-ui.min.js"></script>
+	<script src="/plugins/toastr/toastr.min.js"></script>
 	<script>$.widget.bridge('uibutton', $.ui.button)</script>
 	<script src="/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 	<script src="/plugins/chart.js/Chart.min.js"></script>

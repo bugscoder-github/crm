@@ -83,11 +83,8 @@ class User extends Authenticatable implements LaratrustUser
     }
 
     public function getNotificationCount() {
-    	$userRel = [$this->id];
-
-     	// if ($this->hasRole('Admin') || $this->hasRole('owner')) {
-        // 	array_push($userRel, 0);
-        // }
-    	return Lead::whereIn('user_id', $userRel)->where('read_at', null)->count();
+        $userList = [$this->id];
+        if (isOwner()) { $userList[] = '0'; }
+        return Lead::whereIn('user_id', $userList)->whereAnd('read_at', null)->count();
     }
 }

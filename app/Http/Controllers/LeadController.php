@@ -22,6 +22,11 @@ class LeadController extends Controller {
         if (!isAdminOrOwner()) {
             $leads = $leads->where("user_id", me()->id);
         }
+        if (isOwner()) {
+            $leads = $leads->latest();
+        }
+
+        // dd($leads->latest()->get()->toArray());
 
         return Inertia::render("Lead/Index", [
             "leads" => $leads->latest()->get(),

@@ -26,10 +26,73 @@
 										<!-- <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-default" style="float: right;">Search Customer</button> -->
 									</div>
 								</div>
+
+								<div class="card-body">
+									<div class="row">
+										<div class="col-sm-8">
+											<div class="form-group">
+												<label for="company">{{ $t('Company Name') }}</label>
+												<input type="text" class="form-control" id="company" :placeholder="$t('Company Name')" v-model="form.company">
+												<span class="text-danger" v-if="errors.company" >{{ errors.company }}</span >
+											</div>
+										</div>
+										<div class="col-sm-4">
+											<div class="form-group">
+												<label for="premise_type">{{ $t('Premise Type') }}</label>
+												<input type="text" class="form-control" id="premise_type" :placeholder="$t('Premise Type')" v-model="form.premise_type">
+												<span class="text-danger" v-if="errors.premise_type" >{{ errors.premise_type }}</span >
+											</div>
+										</div>
+										<div class="col-sm-6">
+											<div class="form-group">
+												<label for="lead_name">{{ $t('Customer Name') }}</label>
+												<input type="text" class="form-control" id="lead_name" :placeholder="$t('Customer Name')" v-model="form.customer_name">
+												<span class="text-danger" v-if="errors.customer_name" >{{ errors.customer_name }}</span >
+											</div>
+										</div>
+										<div class="col-sm-2">
+											<div class="form-group">
+												<label for="lead_phone">{{ $t('Contact') }}</label>
+												<input type="text" class="form-control" id="lead_phone" :placeholder="$t('Contact')" v-model="form.phone">
+												<span class="text-danger" v-if="errors.phone" >{{ errors.phone }}</span >
+											</div>
+										</div>
+										<div class="col-sm-4">
+											<div class="form-group">
+												<label for="email">{{ $t('Email') }}</label>
+												<input type="email" class="form-control" id="email" :placeholder="$t('Email')" v-model="form.email">
+												<span class="text-danger" v-if="errors.email" >{{ errors.email }}</span >
+											</div>
+										</div>
+									</div>
+									<hr>
+									<div class="form-group row">
+										<label for="address" class="col-sm-2 col-form-label">{{ $t('Delivery Address') }}</label>
+										<div class="col-sm-10">
+											<input type="text" class="form-control" id="address" :placeholder="$t('Delivery Address')" v-model="form.delivery_address" />
+											<span class="text-danger" v-if="errors.delivery_address" >{{ errors.delivery_address }}</span >
+										</div>
+									</div>
+									<div class="form-group row">
+										<label for="lead_companyName" class="col-sm-2 col-form-label">{{ $t('Billing Address') }}</label>
+										<div class="col-sm-10">
+											<input type="text" class="form-control" id="lead_companyName" :placeholder="$t('Billing Address')" v-model="form.billing_address" />
+											<span class="text-danger" v-if="errors.billing_address" >{{ errors.billing_address }}</span >
+										</div>
+									</div>
+									<div class="form-group row">
+										<div class="offset-sm-2 col-sm-10">
+											<div class="form-check">
+												<input type="checkbox" class="form-check-input" id="is_same_delivery" v-model="form.is_same_billing_address">
+												<label class="form-check-label" for="is_same_delivery">{{ $t('Same as Delivery Address') }}</label>
+											</div>
+										</div>
+									</div>
+								</div>
 							</div>
 							<div class="card">
 								<div class="card-header">
-									Items
+									{{ $t('Items') }}
 									<div style="float: right">
 										<!-- <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-default" style="float: right;">Search Customer</button> -->
 									</div>
@@ -192,7 +255,7 @@ export default {
     methods: {
 		handleSubmit() {
 			if (this.form.id) {
-				useForm(this.form).put(route('quotation.update', { id: t.form.id }), {
+				useForm(this.form).put(route('quotation.update', { id: this.form.id }), {
 				});
 			} else {
 				useForm(this.form).post(route('quotation.store'), {

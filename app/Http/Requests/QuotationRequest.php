@@ -22,9 +22,6 @@ class QuotationRequest extends FormRequest
 	public function rules(): array {
 		$rules = [
 			// Preset Data
-			'lead_id' => [
-				'required'
-			],
 			'quotation_number' => [
 				'nullable'
 			],
@@ -53,7 +50,36 @@ class QuotationRequest extends FormRequest
 				'nullable',
 				'max:255'
 			],
-			'is_shipping_address' => [
+
+			'company' => [
+				'nullable',
+				'max:255'
+			],
+			'premise_type' => [
+				'nullable',
+				'max:255'
+			],
+			'customer_name' => [
+				'nullable',
+				'max:255'
+			],
+			'phone' => [
+				'nullable',
+				'max:255'
+			],
+			'email' => [
+				'nullable',
+				'max:255'
+			],
+			'delivery_address' => [
+				'nullable',
+				'max:255'
+			],
+			'billing_address' => [
+				'nullable',
+				'max:255'
+			],
+			'is_same_billing_address' => [
 				'boolean'
 			],
 
@@ -85,7 +111,9 @@ class QuotationRequest extends FormRequest
 				'boolean',
 			],
 		];
-
+		if ($this->isMethod('post')) {
+			$rules['lead_id'] = 'required';
+		}
         if ($this->isMethod('put')) {
             $rules['items.*.id'] = 'sometimes|exists:quotation_items,id';
         }

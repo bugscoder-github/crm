@@ -72,7 +72,10 @@ class QuotationController extends Controller {
 		$quotation['discounts'] = $quotation->discounts;
 
 		// TODO: To be adjusted
-		$quotation['currency'] = 'MYR';
+		$currency = me()->currentTeam()->getTeamPrimary();
+
+		$quotation['currency'] = $currency->iso3;
+		$quotation['currency_symbol'] = $currency->symbol;
 
 		return Inertia::render("Quotation/Form", [
 			"form" => $quotation,
@@ -119,18 +122,29 @@ class QuotationController extends Controller {
 		);
 		$quotationData = collect($quotationData);
 		$discounts = $quotationData->only('discounts');
-
-		$sequence = $team->findSequenceType('quotation');
-
-		$quotationData['quotation_number'] = $sequence->prefix . $sequence->number . $sequence->suffix;
 		
-        // Create Quotation
-		$quotation = $team->quotations()->create($quotationData->except('items')->toArray());
+		if (!$quotation) {
+       		// Create Quotation
+			$sequence = $team->findSequenceType('quotation');
+			$quotationData['quotation_number'] = $sequence->prefix . $sequence->number . $sequence->suffix;
 
-		// Update Sequence Running Numbers
-		$sequence->update([
-            'number' => $sequence->number + 1
-        ]);
+			$quotation = $team->quotations()->create($quotationData->except('items')->toArray());
+
+			// Update Sequence Running Numbers
+			$sequence->update([
+				'number' => $sequence->number + 1
+			]);
+		} else {
+        	// Update Quotation
+			$quotation->update($quotationData->except('items')->toArray());
+			// Refresh Database
+			$quotation->refresh();
+		}
+
+		// Clear Items
+		$quotation->items()->delete();
+		// Clear Discounts
+		$quotation->discounts()->delete();
 
 		// Create Customer Discounts
 		foreach ($discounts as $key => $discount) {

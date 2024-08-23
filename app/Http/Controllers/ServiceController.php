@@ -6,6 +6,8 @@ use App\Http\Requests\ServiceRequest;
 use App\Models\Service;
 use Yajra\DataTables\Datatables;
 
+use Inertia\Inertia;
+
 class ServiceController extends Controller
 {
     /**
@@ -28,7 +30,7 @@ class ServiceController extends Controller
      */
     public function index()
     {
-        //
+        return Inertia::render("Service/Index");
     }
 
     /**
@@ -36,21 +38,13 @@ class ServiceController extends Controller
      */
     public function create()
     {
-        //
+		return $this->renderForm();
     }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(ServiceRequest $request)
-    {
-        //
-    }
-
+    
     /**
      * Display the specified resource.
      */
-    public function show(Service $Service)
+    public function show(Service $service)
     {
         //
     }
@@ -58,24 +52,67 @@ class ServiceController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Service $Service)
+    public function edit(Service $service)
     {
-        //
+		return $this->renderForm($service);
+    }
+
+    public function renderForm(Service $service = null) {
+		if ($service == null) { $service = new Service(); }
+
+		return Inertia::render("Service/Form", [
+			"form" => $service,
+			"success" => session("success") ?? ""
+		]);
+	}
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(ServiceRequest $request)
+    {
+        $result = $this->save($request);
+
+        return $this->goto($result->id, __("Service created succesfully."));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(ServiceRequest $request, Service $Service)
+    public function update(ServiceRequest $request, Service $service)
     {
-        //
+        $result = $this->save($request, $service);
+
+        return $this->goto($result->id, __("Service updated succesfully."));
     }
+
+    public function save(ServiceRequest $request, Service $service = null) {
+		$team = me()->currentTeam();
+		
+		$data = $request->validated();
+
+        if ($service) {
+            $service->update($data);
+        } else {
+            $service = $team->services()->create($data);
+        }
+
+		return $service;
+	}
+
+	public function goto($id, $message) {
+        return redirect()
+            ->route("service.edit", ['service' => $id])
+            ->withInput()
+            ->with("success", $message);
+	}
+
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Service $Service)
+    public function destroy(Service $service)
     {
-        //
+        return $service->delete();
     }
 }

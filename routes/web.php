@@ -69,9 +69,7 @@ Route::prefix('_backend')->middleware(['auth', 'verified'])->group(function () {
 	Route::post('lead/{lead}/reopen', [LeadController::class, 'leadReopen'])->name('lead.reopen');
 
     Route::get('quotation/{quotation}/pdf', [QuotationController::class, 'pdf'])->name('quotation.pdf');
-    Route::resources(['quotation' => QuotationController::class]);
 
-    Route::resources(['invoice' => InvoiceController::class]);
 	Route::post('invoice/{invoice}/paid', [InvoiceController::class, 'invoiceMarkPaid'])->name('invoice.paid');
 	Route::post('invoice/{invoice}/approved', [InvoiceController::class, 'invoiceMarkApproved'])->name('invoice.approved');
 	Route::get('invoice/{invoice}/pdf', [InvoiceController::class, 'pdf'])->name('invoice.pdf');
@@ -94,14 +92,15 @@ Route::prefix('_backend')->middleware(['auth', 'verified'])->group(function () {
 		]);
 	});
 
+    Route::resources(['service' => ServiceController::class]);
+    Route::resources(['template-services' => TemplateServiceController::class]);
+    Route::resources(['quotation' => QuotationController::class]);
+    Route::resources(['invoice' => InvoiceController::class]);
+
 	Route::get('datatables', [ServiceController::class, 'datatables'])->name('services.datatables');
-    Route::resources(['services' => ServiceController::class]);
 
 	Route::get('template/datatables', [TemplateServiceController::class, 'datatables'])->name('template.services.datatables');
 	Route::get('template/{id}/services', [TemplateServiceController::class, 'services'])->name('template.services.retrieve');
-    Route::resources(['template/services' => TemplateServiceController::class]);
-
-    Route::resources(['quotation' => QuotationController::class]);
 
 	Route::post('estimate', [SharedController::class, 'estimate'])->name('shared.estimate');
 });

@@ -23,6 +23,17 @@ class Service extends Model
         'description' => null,
         'price' => 0
     ];
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'name',
+        'description',
+        'price'
+    ];
     
     /**
      * Relationship belongs to team

@@ -319,4 +319,4 @@ export default {
     }
 }
 
-</script>../Service/ItemModal.vue../Service/ItemTemplateModal.vue
+</script>

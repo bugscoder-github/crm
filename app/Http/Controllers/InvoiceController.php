@@ -49,22 +49,28 @@ class InvoiceController extends Controller
 		}
 		
 		if (!$invoice->id) {
-			$invoice = new Invoice(
-				collect($quotation->toArray())->except([
-					'id', 
-					'team_id',
-					'lead_id',
-					'quotation_type',
-					'frequency_type',
-					'frequency',
-					'quotation_number',
-					'quotation_date',
-				])->toArray()
-			);
-			$invoice->quotation_id = $quotation->id;
-			$items = $quotation->items()->where('is_enabled', 1)->get();
-			$invoice['discounts'] = $quotation->discounts;
-			$invoice['taxes'] = $quotation->taxes;
+			if ($quotation ?? null) {
+				$invoice = new Invoice(
+					collect($quotation->toArray())->except([
+						'id', 
+						'team_id',
+						'lead_id',
+						'quotation_type',
+						'frequency_type',
+						'frequency',
+						'quotation_number',
+						'quotation_date',
+					])->toArray()
+				);
+				$invoice->quotation_id = $quotation->id;
+				$items = $quotation->items()->where('is_enabled', 1)->get();
+				$invoice['discounts'] = $quotation->discounts;
+				$invoice['taxes'] = $quotation->taxes;
+			} else {
+				$items = $invoice->items;
+				$invoice['discounts'] = $invoice->discounts;
+				$invoice['taxes'] = $invoice->taxes;
+			}
 		} else {
 			$items = $invoice->items;
 			$invoice['discounts'] = $invoice->discounts;

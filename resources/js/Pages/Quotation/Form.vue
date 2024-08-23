@@ -227,8 +227,8 @@
 import { onMounted, ref } from "vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import FormValidation from "@/Helpers/FormValidation.vue";
-import ItemModal from "./ItemModal.vue";
-import ItemTemplateModal from "./ItemTemplateModal.vue";
+import ItemModal from "@/Pages/Service/ItemModal.vue";
+import ItemTemplateModal from "@/Pages/Service/ItemTemplateModal.vue";
 import { useForm, Head } from "@inertiajs/vue3";
 
 export default {
@@ -319,4 +319,4 @@ export default {
     }
 }
 
-</script>
+</script>../Service/ItemModal.vue../Service/ItemTemplateModal.vue

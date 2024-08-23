@@ -7,11 +7,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
+
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class Quotation extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes, LogsActivity;
     
     /**
      * The attributes that should be cast.
@@ -167,5 +171,9 @@ class Quotation extends Model
     public function itemDiscounts() :HasMany
     {
         return $this->hasMany(QuotationDiscount::class)->where('quotation_discount_type', 'quotation');
+    }
+
+    public function getActivitylogOptions(): LogOptions {
+        return LogOptions::defaults()->useLogName('quotation')->logAll();
     }
 }

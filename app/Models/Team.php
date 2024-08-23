@@ -95,6 +95,14 @@ class Team extends LaratrustTeam
         return $this->hasMany(Quotation::class);
     }
 
+     /**
+     * Relationship has many invoices
+     */
+    public function invoices() :HasMany
+    {
+        return $this->hasMany(Invoice::class);
+    }
+
     /**
      * Finding Sequence Type
      */

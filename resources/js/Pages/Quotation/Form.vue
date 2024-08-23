@@ -204,7 +204,7 @@
 							
 							<button type="submit" class="btn btn-info me-2">{{ $t('Create') }}</button>
 							<a class="btn btn-warning me-2" :href="route('quotation.pdf', form.id)" v-if="form.id">{{ $t('PDF') }}</a>
-							<a class="btn btn-primary">{{ $t('Generate Invoice') }}</a>
+							<a v-if="form.id" :href="route('invoice.create', { quotation_id: form.id })" class="btn btn-primary">{{ $t('Generate Invoice') }}</a>
 						</form>
 					</div>
 				</div>

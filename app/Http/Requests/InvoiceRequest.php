@@ -21,27 +21,93 @@ class InvoiceRequest extends FormRequest
      */
     public function rules(): array {
 		$rules = [
-			"quotation_id" => [],
-			"invoice_name" => [],
-			"invoice_phone" => [],
-			"invoice_company" => [],
-			"invoice_premiseType" => [],
-			"invoice_email" => [],
-			"invoice_deliveryAddress" => [],
-			"invoice_billingAddress" => [],
-			"invoice_tnc" => [],
-			'invoice_remark' => [],
-			'invoice_sstPct' => [],
-            // 'invoice_items' => ['array'],
-            'invoice_items.*.invoiceItem_desc' => [],
-            'invoice_items.*.invoiceItem_ppu' => [],
-            'invoice_items.*.invoiceItem_qty' => [],
+			// Preset Data
+			'invoice_number' => [
+				'nullable'
+			],
+			'invoice_date' => [
+				'nullable',
+				'date_format:format,Y-m-d'
+			],
+			'discount_code' => [
+				'nullable'
+			],
+			'currency' => [
+				'required',
+				'max:255'
+			],
+			'currency_symbol' => [
+				'nullable',
+				'max:255'
+			],
+
+			'company' => [
+				'nullable',
+				'max:255'
+			],
+			'premise_type' => [
+				'nullable',
+				'max:255'
+			],
+			'customer_name' => [
+				'nullable',
+				'max:255'
+			],
+			'phone' => [
+				'nullable',
+				'max:255'
+			],
+			'email' => [
+				'nullable',
+				'max:255'
+			],
+			'delivery_address' => [
+				'nullable',
+				'max:255'
+			],
+			'billing_address' => [
+				'nullable',
+				'max:255'
+			],
+			'is_same_billing_address' => [
+				'boolean'
+			],
+
+			// Item Data
+			'items.*.item_type' => [
+				'required',
+				'in:service,custom'
+			],
+			'items.*.service_id' => [
+				'nullable',
+				'integer'
+			],
+			'items.*.name' => [
+				'nullable',
+			],
+			'items.*.description' => [
+				'nullable',
+			],
+			'items.*.quantity' => [
+				'required',
+				'integer',
+				'min:1'
+			],
+			'items.*.unit_amount' => [
+				'required',
+				'numeric'
+			],
+			'items.*.is_enabled' => [
+				'boolean',
+			],
 		];
-
+		if ($this->isMethod('post')) {
+			$rules['quotation_id'] = 'required';
+		}
         if ($this->isMethod('put')) {
-            $rules['invoice_items.*.invoiceItem_id'] = 'sometimes|exists:invoice_items,invoiceItem_id';
+            $rules['items.*.id'] = 'sometimes|exists:invoice_items,id';
         }
-
-        return $rules;
+		
+		return $rules;
     }
 }

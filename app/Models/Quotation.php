@@ -48,7 +48,7 @@ class Quotation extends Model
         'email' => null,
         'delivery_address' => null,
         'billing_address' => null,
-        'is_same_billing_address' => null,
+        'is_same_billing_address' => false,
 
         'currency' => null,
         'currency_symbol' => null,

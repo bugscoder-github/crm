@@ -4,11 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\InvoiceRequest;
 use App\Models\Invoice;
-use App\Models\InvoiceItems;
+use App\Models\InvoiceItem;
 use App\Models\Quotation;
-use App\Models\QuotationItems;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Inertia\Inertia;
+
+use App\Services\CalculationService;
 
 class InvoiceController extends Controller
 {
@@ -17,7 +18,7 @@ class InvoiceController extends Controller
      */
     public function index() {
 		return Inertia::render("Invoice/Index", [
-			"invoice" => Invoice::orderBy('invoice_id', 'desc')->get()
+			"invoice" => Invoice::orderBy('id', 'desc')->get()
 		]);
     }
 
@@ -43,18 +44,55 @@ class InvoiceController extends Controller
 
 	public function renderForm(Invoice $invoice = null) {
 		if ($invoice == null) { $invoice = new Invoice(); }
-		if ($invoice->invoice_id == null && request()->get('quotation_id') != null) {
-			$quotation = Quotation::where('quotation_id', request()->get('quotation_id', 0))->firstOrFail();
-            $quotationItems = [QuotationItems::where("quotation_id", request()->get('quotation_id', 0))->firstOrFail()];
+		if ($invoice->id == null && request()->get('quotation_id') != null) {
+			$quotation = me()->currentTeam()->quotations()->where('id', request()->get('quotation_id', 0))->firstOrFail();
+		}
+		
+		if (!$invoice->id) {
+			$invoice = new Invoice(
+				collect($quotation->toArray())->except([
+					'id', 
+					'team_id',
+					'lead_id',
+					'quotation_type',
+					'frequency_type',
+					'frequency',
+					'quotation_number',
+					'quotation_date',
+				])->toArray()
+			);
+			$invoice->quotation_id = $quotation->id;
+			$items = $quotation->items()->where('is_enabled', 1)->get();
+			$invoice['discounts'] = $quotation->discounts;
+			$invoice['taxes'] = $quotation->taxes;
+		} else {
+			$items = $invoice->items;
+			$invoice['discounts'] = $invoice->discounts;
+			$invoice['taxes'] = $invoice->taxes;
 		}
 
-        // dd($quotationItems);
+		// Amend Items For Vue Select Use
+		foreach ($items as $key => $item) {
+			$items[$key]['discounts'] = $item->discounts()->select([
+				'name',
+				'description',
+				'discount_type',
+				'amount',
+			])->get();
+		}
+		$invoice['items'] = $items;
+		
+
+		// TODO: To be adjusted
+		$currency = me()->currentTeam()->getTeamPrimary();
+
+		$invoice['currency'] = $currency->iso3;
+		$invoice['currency_symbol'] = $currency->symbol;
 
 		return Inertia::render("Invoice/Form", [
-            'invoice' => $invoice,
-            'invoice_items' => $invoice->items()->get() ?? [],
-            'quotation' => $quotation ?? [],
-            'quotation_items' => $quotationItems ?? [],
+            "form" => $invoice,
+			"itemTemplate" => new InvoiceItem(),
+            'quotation' => $quotation ?? null,
             'success' => session("success") ?? ""
 		]);
 	}
@@ -65,13 +103,7 @@ class InvoiceController extends Controller
     public function store(InvoiceRequest $request) {
 		$result = $this->save($request);
 
-		// if ($result->lead_id != null) {
-		// 	Lead::where('lead_id', $result->lead_id)->update([
-		// 		'quotation_id' => $result->quotation_id
-		// 	]);
-		// }
-
-        return $this->goto($result->invoice_id, "Invoice created succesfully.");
+        return $this->goto($result->id, "Invoice created succesfully.");
     }
 
     /**
@@ -80,40 +112,80 @@ class InvoiceController extends Controller
     public function update(InvoiceRequest $request, Invoice $invoice) {
         $result = $this->save($request, $invoice);
 
-        return $this->goto($result->invoice_id, "Invoice updated succesfully.");
+        return $this->goto($result->id, "Invoice updated succesfully.");
     }
 
     public function save(InvoiceRequest $request, Invoice $invoice = null) {
-		$data = $request->validated();
-		$basic = collect($data)->except('invoice_items')->toArray();
-		$items = $data['invoice_items'];
-        
-		if ($invoice == null) { $invoice = new Invoice(); }
-		$invoice = Invoice::updateOrCreate(['invoice_id' => $invoice->invoice_id], $basic);
-
-		//Delete item that is not in data[quotation_item]
-		$dataItemId = array_filter(array_column($items, 'invoiceItem_id'));
-		InvoiceItems::where('invoice_id', $invoice->invoice_id)->whereNotIn('invoiceItem_id', $dataItemId)->delete();
+		$team = me()->currentTeam();
 		
-		$total = 0;
-		foreach($items as $key => $value) {
-			if (empty($value['invoiceItem_desc'])) { continue; }
+		$data = $request->validated();
 
-			$value['invoice_id'] = $invoice->invoice_id;
-			if (!isset($value['invoiceItem_id'])) { $value['invoiceItem_id'] = null; }
-			if ($value['invoiceItem_id'] == 0)    { $value['invoiceItem_id'] = null; }
+		$invoiceData = CalculationService::estimate(
+            $data,
+			$team,
+			false
+		);
 
-			$value['invoiceItem_total'] = ($value['invoiceItem_ppu'] * $value['invoiceItem_qty']);
-			$total += $value['invoiceItem_total'];
+		$invoiceData = collect($invoiceData);
+		$discounts = $invoiceData->only('discounts');
+		$taxes = $invoiceData->only('taxes');
 
-			InvoiceItems::updateOrCreate(['invoiceItem_id'=> $value['invoiceItem_id']], $value);
+		if (!$invoice) {
+       		// Create Quotation
+			$sequence = $team->findSequenceType('invoice');
+			$invoiceData['invoice_number'] = $sequence->prefix . $sequence->number . $sequence->suffix;
+
+			$invoice = $team->invoices()->create($invoiceData->except('items')->toArray());
+
+			// Update Sequence Running Numbers
+			$sequence->update([
+				'number' => $sequence->number + 1
+			]);
+		} else {
+        	// Update Quotation
+			$invoice->update($invoiceData->except('items')->toArray());
+			// Refresh Database
+			$invoice->refresh();
 		}
 
-		$invoice->update([
-			'invoice_total' => $total,
-			'invoice_sst' => $total*($basic['invoice_sstPct']/100),
-			'invoice_grandTotal' => $total*(1+($basic['invoice_sstPct']/100))
-		]);
+		// Clear Items
+		$invoice->items()->delete();
+		// Clear Discounts
+		$invoice->discounts()->delete();
+
+		// Create Customer Discounts
+		foreach ($discounts['discounts'] as $key => $discount) {
+            $discount['invoice_discount_type'] = 'invoice';
+            $discount['invoice_discount_id'] = $invoice->id;
+            $invoice->discounts()->create($discount);
+        }
+
+		// Create Customer Taxes
+		foreach ($taxes['taxes'] as $key => $tax) {
+            $invoice->taxes()->create($tax);
+        }
+
+		$items = $invoiceData->only('items')->toArray()['items'];
+
+		// Setup Item Data
+        foreach ($items as $item) {
+            $item = collect($item);
+
+			// Get Item Discounts
+            $itemDiscount = $item->pull('discounts');
+
+            // Create Quotation Items
+            $invoiceItem = $invoice->items()->create($item->toArray());
+
+			// Create Item Discount
+            if ($itemDiscount) {
+                foreach ($itemDiscount as $discount) {
+                    $discount['invoice_discount_type'] = 'invoice_item';
+                    $discount['invoice_discount_id'] = $invoiceItem->id;
+                    $invoice->discounts()->create($discount);
+                }
+            }
+        }
 
 		return $invoice;
     }

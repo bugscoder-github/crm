@@ -16,6 +16,8 @@ return new class extends Migration
             $table->dropColumn('tax_type');
             $table->dropColumn('tax_charge_type');
             $table->dropColumn('tax_rate');
+
+            $table->timestamp('deleted_at')->after('updated_at')->nullable();
         });
 
         Schema::create('quotation_taxes', function (Blueprint $table) {
@@ -44,6 +46,8 @@ return new class extends Migration
             $table->string('tax_type')->after('tax_name')->nullable();
             $table->string('tax_charge_type')->after('tax_type')->nullable();
             $table->integer('tax_rate')->after('tax_charge_type')->default(0);
+
+            $table->dropColumn('deleted_at');
         });
     }
 };

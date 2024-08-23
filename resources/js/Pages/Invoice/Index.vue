@@ -28,26 +28,25 @@ const props = defineProps(["invoice"]);
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="x in invoice" :key="x.invoice_id">
+                        <tr v-for="x in invoice" :key="x.id">
                             <td>
-                                <a :href="route('invoice.edit', x.invoice_id)">{{ x.invoice_id }}</a>
+                                <a :href="route('invoice.edit', x.id)">{{ x.invoice_number }}</a>
                                 <template v-if="x.quotation_id"><br><small><a :href="route('quotation.edit', x.quotation_id)" target="_blank">(Quote: {{ x.quotation_id }})</a></small></template>
                             </td>
                             <td>
-                                <template v-if="!x.invoice_company">{{ x.invoice_name }}</template>
+                                <template v-if="!x.company">{{ x.invoice_number }}</template>
                                 <template v-else>
-                                    {{ x.invoice_company }}<br>
-                                    (Attn: {{ x.invoice_name }})
+                                    {{ x.company }}<br>
+                                    (Attn: {{ x.customer_name }})
                                 </template>
                                 
 
                             </td>
                             <td>
-                                {{ amountFormat(x.invoice_grandTotal) }}
-                                <br><small>{{ amountFormat(x.invoice_total) }} ({{ amountFormat(x.invoice_sst) }} @ {{ x.invoice_sstPct }}%)</small>
+                                {{ x.currency }} {{ x.total_amount }}
                             </td>
                             <td>{{ TimeToString(x.created_at) }}</td>
-                            <td><a :href="route('invoice.edit', x.invoice_id)">Edit</a></td>
+                            <td><a :href="route('invoice.edit', x.id)">Edit</a></td>
                         </tr>
                     </tbody>
                 </table>

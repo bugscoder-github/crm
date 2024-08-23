@@ -9,6 +9,7 @@ use App\Http\Controllers\LeadController;
 use App\Http\Controllers\LeadCommentController;
 use App\Http\Controllers\MetadataController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\TaxController;
 use App\Http\Controllers\TemplateServiceController;
 use App\Http\Controllers\QuotationController;
 use App\Http\Controllers\SharedController;
@@ -92,14 +93,17 @@ Route::prefix('_backend')->middleware(['auth', 'verified'])->group(function () {
 		]);
 	});
 
+
+	Route::get('tax/datatables', [TaxController::class, 'datatables'])->name('tax.datatables');
+	Route::get('service/datatables', [ServiceController::class, 'datatables'])->name('service.datatables');
+	Route::get('template/datatables', [TemplateServiceController::class, 'datatables'])->name('template.service.datatables');
+
     Route::resources(['service' => ServiceController::class]);
+    Route::resources(['tax' => TaxController::class]);
     Route::resources(['template-services' => TemplateServiceController::class]);
     Route::resources(['quotation' => QuotationController::class]);
     Route::resources(['invoice' => InvoiceController::class]);
 
-	Route::get('datatables', [ServiceController::class, 'datatables'])->name('services.datatables');
-
-	Route::get('template/datatables', [TemplateServiceController::class, 'datatables'])->name('template.services.datatables');
 	Route::get('template/{id}/services', [TemplateServiceController::class, 'services'])->name('template.services.retrieve');
 
 	Route::post('estimate', [SharedController::class, 'estimate'])->name('shared.estimate');

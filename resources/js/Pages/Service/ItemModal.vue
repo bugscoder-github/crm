@@ -56,7 +56,7 @@ export default {
             t.table = new DataTable('#tables', {
                 processing: true,
                 serverSide: true,
-                ajax: route('services.datatables'),
+                ajax: route('service.datatables'),
                 pagingType: 'simple',
                 paging: false,
                 order: [[2, 'desc']],

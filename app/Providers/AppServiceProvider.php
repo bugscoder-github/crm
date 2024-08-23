@@ -26,11 +26,14 @@ class AppServiceProvider extends ServiceProvider
         Route::bind('quotation', function (string $value) {
             return me()->currentTeam()->quotations()->where('id', $value)->firstOrFail();
         });
-        Route::bind('quotation', function (string $value) {
+        Route::bind('invoices', function (string $value) {
             return me()->currentTeam()->invoices()->where('id', $value)->firstOrFail();
         });
         Route::bind('service', function (string $value) {
             return me()->currentTeam()->services()->where('id', $value)->firstOrFail();
+        });
+        Route::bind('tax', function (string $value) {
+            return me()->currentTeam()->taxes()->where('id', $value)->firstOrFail();
         });
         Route::bind('template-services', function (string $value) {
             return me()->currentTeam()->templateServices()->where('id', $value)->firstOrFail();

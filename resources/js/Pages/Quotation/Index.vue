@@ -29,7 +29,7 @@ const props = defineProps(["quotation"]);
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="x in quotation" :key="x.quotation_id">
+                        <tr v-for="x in quotation" :key="x.id">
                             <td>
                                 <a :href="route('quotation.edit', x.id)">{{ x.id }}</a>
                                 <template v-if="x.lead_id"><br><small><a :href="route('lead.edit', x.lead_id)" target="_blank">(Lead: {{ x.lead_id }})</a></small></template>

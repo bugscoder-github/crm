@@ -13,7 +13,7 @@ use Spatie\Activitylog\Models\Activity;
 
 class LeadController extends Controller {
     public function index() {
-        $leads = Lead::with('user');
+        $leads = Lead::with('user')->with('quotation');
         if (!isOwner()) {
             $leads = $leads->whereHas('user', function($query) {
                 $query->where('current_team_id', me()->current_team_id);
@@ -74,13 +74,13 @@ class LeadController extends Controller {
 
     public function renderForm(Lead $lead = null) {
         $lead = ($lead == null) ? new Lead() : $lead;
+        $lead->quotation = $lead->quotation;
         $user = [me()];
         if (isAdminOrOwner()) {
             $user = User::where('current_team_id', me()->current_team_id)->whereHasRole('Sales')->get();
         }
 
         // dd(Activity::whereRaw("log_name = 'lead' and subject_id = '{$lead->lead_id}'")->get()->toArray());
-
         return Inertia::render("Lead/Form", [
             // "log" => $lead->lead_id > 0 ? Activity::whereRaw("log_name = 'lead' and subject_id = '{$lead->lead_id}'")->get() : [],
             "log" => $this->leadLog($lead->lead_id),

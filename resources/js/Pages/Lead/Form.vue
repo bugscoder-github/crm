@@ -234,8 +234,8 @@
 								<div class="card-footer">
 								<ul class="nav nav-pills ml-auto" style="float: right;">
 									<li class="nav-item mr-2">
-										<Link :href="route('quotation.create')" :data="{lead_id: props.lead.lead_id}" v-if="props.lead.lead_id && !props.lead.quotation_id">Create Quotation</Link>
-										<a :href="route('quotation.edit', props.lead.quotation_id)" v-else>Quotation # {{ props.lead.quotation_id }}</a>
+										<Link :href="route('quotation.create')" :data="{lead_id: props.lead.lead_id}" v-if="props.lead.lead_id && !props.lead.quotation">Create Quotation</Link>
+										<a :href="route('quotation.edit', props.lead.quotation.id)" v-else>Quotation: {{ props.lead.quotation.quotation_number }}</a>
 									</li>
 									<li class="mr-2">&nbsp;|&nbsp;</li>
                   					<li class="nav-item">

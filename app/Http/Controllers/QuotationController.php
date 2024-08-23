@@ -53,7 +53,7 @@ class QuotationController extends Controller {
 
 	public function renderForm(Quotation $quotation = null) {
 		if ($quotation == null) { $quotation = new Quotation(); }
-		if ($quotation->quotation_id == null && request()->get('lead_id') != null) {
+		if ($quotation->id == null && request()->get('lead_id') != null) {
 			$lead = Lead::where('lead_id', request()->get('lead_id', 0))->firstOrFail();
 		}
 
@@ -92,12 +92,6 @@ class QuotationController extends Controller {
 	 */
 	public function store(QuotationRequest $request) {
 		$result = $this->save($request);
-
-		if ($result->lead_id != null) {
-			Lead::where('lead_id', $result->lead_id)->update([
-				'quotation_id' => $result->quotation_id
-			]);
-		}
 
         return $this->goto($result->id, "Quotation created succesfully.");
 	}

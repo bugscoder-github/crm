@@ -71,7 +71,7 @@ function doneClass(x = null) {
                                 <div class="badge bg-warning" v-if="x.lead_status == 2">Pending</div>
                                 <div class="badge bg-success" v-if="x.lead_status == 3">WIP</div>
                                 <div class="badge bg-gray"    v-if="x.lead_status == 4">Done</div>
-                                <br><small v-if="x.quotation_id"><Link :href="route('quotation.edit', x.quotation_id)">Quote #{{x.quotation_id}}</Link></small>
+                                <br><small v-if="x.quotation"><Link :href="route('quotation.edit', x.quotation.id)">{{x.quotation.quotation_number}}</Link></small>
                             </td>
                             <td>
                             	{{ TimeToString(x.lead_createdAt) }}

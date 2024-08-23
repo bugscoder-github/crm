@@ -35,15 +35,16 @@ const props = defineProps(["quotation"]);
                                 <template v-if="x.lead_id"><br><small><a :href="route('lead.edit', x.lead_id)" target="_blank">(Lead: {{ x.lead_id }})</a></small></template>
                             </td>
                             <td>
-                                <template v-if="!x.quotation_company">{{ x.quotation_name }}</template>
+                                <template v-if="!x.quotation_company">{{ x.quotation_number }}</template>
                                 <template v-else>
-                                    {{ x.quotation_company }}<br>
-                                    (Attn: {{ x.quotation_name }})
+                                    {{ x.company }}<br>
+                                    (Attn: {{ x.customer_name }})
                                 </template>
                                 
 
                             </td>
                             <td>
+                                {{ x.currency }} {{ x.total_amount }}
                             </td>
                             <td>{{ TimeToString(x.created_at) }}</td>
                             <td><a :href="route('quotation.edit', x.id)">Edit</a></td>

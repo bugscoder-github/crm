@@ -84,7 +84,7 @@ class Team extends LaratrustTeam
      */
     public function getCurrencyTaxes($currency)
     {
-        return $this->taxes()->where('currency', $currency)->first();
+        return $this->taxes()->where('currency', $currency)->get();
     }
 
     /**

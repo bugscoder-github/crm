@@ -12,10 +12,6 @@ class CalculationService
         // $customer = $team->customers()->where('id', $data['customer_id'])->firstOrFail();
 
         // Add Summarise Data
-        $data['tax_name'] = null;
-        $data['tax_type'] = null;
-        $data['tax_charge_type'] = null;
-        $data['tax_rate'] = 0;
         $data['sub_total'] = 0;
         $data['total_discount'] = 0;
         $data['total_tax'] = 0;
@@ -40,12 +36,6 @@ class CalculationService
 
         // Get Currency Tax
         $taxCurrency = $team->getCurrencyTaxes($data['currency']);
-        if ($taxCurrency) {
-            $data['tax_name'] = $taxCurrency->name;
-            $data['tax_type'] = $taxCurrency->tax_type;
-            $data['tax_charge_type'] = $taxCurrency->charge_type;
-            $data['tax_rate'] = $taxCurrency->amount;
-        }
 
         // Calculate Items
         foreach ($data['items'] as $key => $item) {
@@ -146,22 +136,45 @@ class CalculationService
         
         $data['total_amount'] = $data['sub_total'] - $data['total_discount'];
 
-        if ($taxCurrency) {
-            if ($taxCurrency->charge_type === 'percentage') {
-                if ($taxCurrency->tax_type === 'exclusive') {
-                    $data['total_tax'] = ($taxCurrency->amount / 100) * $data['total_amount'];
+        $data['taxes'] = [];
+        foreach($taxCurrency as $tax) {
+            $taxAmount = 0;
+
+            if ($tax->charge_type === 'percentage') {
+                $taxAmount = $data['total_amount'] -
+                    ($data['total_amount'] / (1 + ($tax->amount / 100)));
+
+                if ($tax->tax_type === 'exclusive') {
+                    $taxAmount = ($tax->amount / 100) * $data['total_amount'];
+
                     $data['total_amount'] += $data['total_tax'];
-                } else {
-                    $data['total_tax'] = 
-                        $data['total_amount'] -
-                        ($data['total_amount'] / (1 + ($taxCurrency->amount / 100)));
                 }
+
+                $data['total_tax'] +=  $taxAmount;
             } else {
-                $data['total_tax'] = $taxCurrency->amount;
-                if ($taxCurrency->tax_type === 'exclusive') {
-                    $data['total_amount'] += $data['total_tax'];
+                $taxAmount = $tax->amount;
+
+                if ($tax->tax_type === 'exclusive') {
+                    $data['total_amount'] += $taxAmount;
                 }
+
+                $data['total_tax'] += $taxAmount;
             }
+            
+            $taxData = [
+                'tax_name' => $tax->name,
+                'tax_type' => $tax->tax_type,
+                'tax_charge_type' => $tax->charge_type,
+                'tax_rate' => $tax->amount,
+                'tax_amount' => $taxAmount
+            ];
+
+            if ($isNumberFormat) {
+                $taxData['tax_rate'] = number_format($taxData['tax_rate'], $data['number_format']);
+                $taxData['tax_amount'] = number_format($taxData['tax_amount'], $data['number_format']);
+            }
+
+            $data['taxes'][] = $taxData;
         }
 
         // Round Up Price

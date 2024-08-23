@@ -70,6 +70,7 @@ class QuotationController extends Controller {
         }
 		$quotation['items'] = $items;
 		$quotation['discounts'] = $quotation->discounts;
+		$quotation['taxes'] = $quotation->taxes;
 
 		// TODO: To be adjusted
 		$currency = me()->currentTeam()->getTeamPrimary();
@@ -112,11 +113,14 @@ class QuotationController extends Controller {
 
 		$quotationData = CalculationService::estimate(
             $data,
-			$team
+			$team,
+			false
 		);
+
 		$quotationData = collect($quotationData);
 		$discounts = $quotationData->only('discounts');
-		
+		$taxes = $quotationData->only('taxes');
+
 		if (!$quotation) {
        		// Create Quotation
 			$sequence = $team->findSequenceType('quotation');
@@ -141,10 +145,15 @@ class QuotationController extends Controller {
 		$quotation->discounts()->delete();
 
 		// Create Customer Discounts
-		foreach ($discounts as $key => $discount) {
+		foreach ($discounts['discounts'] as $key => $discount) {
             $discount['quotation_discount_type'] = 'quotation';
             $discount['quotation_discount_id'] = $quotation->id;
             $quotation->discounts()->create($discount);
+        }
+
+		// Create Customer Taxes
+		foreach ($taxes['taxes'] as $key => $tax) {
+            $quotation->taxes()->create($tax);
         }
 
 		$items = $quotationData->only('items')->toArray()['items'];

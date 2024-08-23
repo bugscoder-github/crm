@@ -175,14 +175,18 @@
 												<td class="text-end" colspan="4">{{ $t('Total Discount') }}</td>
 												<td colspan="4">{{ form.total_discount }}</td>
 											</tr>
-											<tr>
+											<tr v-for="tax in form.taxes">
 												<td class="text-end"colspan="4">
-													<span v-if="form.tax_name && form.tax_charge_type">{{ form.tax_name }} <span v-if="form.tax_charge_type === 'percentage'">({{ form.tax_rate }}%)</span></span>
+													<span v-if="tax.tax_name && tax.tax_charge_type">{{ tax.tax_name }} <span v-if="tax.tax_charge_type === 'percentage'">({{ tax.tax_rate }}%)</span></span>
 													<span v-else>{{ $t('Tax Rate') }}</span>
 												</td>
 												<td colspan="4">
-													{{ form.total_tax }} <span v-if="form.tax_type === 'inclusive'">({{ $t('Inclusive') }})</span><span v-else>({{ $t('Exclusive') }})</span>
+													{{ tax.tax_amount }} <span v-if="tax.tax_type === 'inclusive'">({{ $t('Inclusive') }})</span><span v-else>({{ $t('Exclusive') }})</span>
 												</td>
+											</tr>
+											<tr>
+												<td class="text-end"colspan="4">{{ $t('Total Tax') }}</td>
+												<td colspan="4">{{ form.total_tax }}</td>
 											</tr>
 											<tr>
 												<td class="text-end"colspan="4">{{ $t('Total') }}</td>
@@ -198,8 +202,9 @@
 								</div>
 							</div>
 							
-							<button type="submit" class="btn btn-info">Create</button>&nbsp;
-							<a :href="route('quotation.pdf', form.id)" v-if="form.id">PDF</a>
+							<button type="submit" class="btn btn-info me-2">{{ $t('Create') }}</button>
+							<a class="btn btn-warning me-2" :href="route('quotation.pdf', form.id)" v-if="form.id">{{ $t('PDF') }}</a>
+							<a class="btn btn-primary">{{ $t('Generate Invoice') }}</a>
 						</form>
 					</div>
 				</div>

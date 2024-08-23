@@ -48,10 +48,6 @@ class Quotation extends Model
 
         'currency' => null,
         'currency_symbol' => null,
-        'tax_name' => null,
-        'tax_type' => null,
-        'tax_charge_type' => null,
-        'tax_rate' => 0,
         'sub_total' => 0,
         'total_discount' => 0,
         'total_tax' => 0,
@@ -83,10 +79,6 @@ class Quotation extends Model
 
         'currency',
         'currency_symbol',
-        'tax_name',
-        'tax_type',
-        'tax_charge_type',
-        'tax_rate',
         'sub_total',
         'total_discount',
         'total_tax',
@@ -154,11 +146,11 @@ class Quotation extends Model
     }
 
     /**
-     * Relationship has many quotation addresses
+     * Relationship has many quotation taxes
      */
-    public function addresses() :HasMany
+    public function taxes() :HasMany
     {
-        return $this->hasMany(QuotationAddress::class);
+        return $this->hasMany(QuotationTax::class);
     }
 
     /**

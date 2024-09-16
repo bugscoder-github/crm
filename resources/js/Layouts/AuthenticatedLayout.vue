@@ -13,6 +13,20 @@ const navClass = (role_name) => {
   return "main-header navbar navbar-expand navbar-white navbar-light role-"+role_name.toLowerCase();
 }
 
+const navMenuOpenClass = (hasPage) => {
+  let className = "nav-item";
+  if (hasPage) { className += " menu-open"; }
+
+  return className;
+}
+
+const navActiveClass = (hasPage) => {
+  let className = "nav-link";
+  if (hasPage) { className += " active"; }
+
+  return className;
+};
+
 const page = usePage();
 const leadCount = ref(page.props.notifications ?? 0);
 
@@ -177,8 +191,9 @@ eventSource.onmessage = function(event) {
       <i class="fas fa-angle-down right ml-2"></i>
 		</a>
         <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                                        <Link :href="route('logout')" method="post" as="button">Log Out</Link>
-          <span class="dropdown-item dropdown-header">
+          <Link :href="route('logout')" method="post" as="button" class="dropdown-item">Log Out</Link>
+          <div class="dropdown-divider"></div>
+          <span class="dropdown-item">
           		<!-- <Link :href="route('profile.edit')">Profile</Link> -->
           		<Link :href="route('user.edit', $page.props.auth.user.id)">Profile</Link>
           </span>
@@ -203,7 +218,7 @@ eventSource.onmessage = function(event) {
               <p>Dashboard</p>
             </a>
           </li>
-<li class="nav-item menu-open">
+          <li :class="navMenuOpenClass(route().current('lead.index') || route().current('lead.create') || route().current('lead.edit'))">
                 <a href="#" class="nav-link ">
                 	<i class="nav-icon fas fa-comment"></i>
                     <p>
@@ -213,103 +228,103 @@ eventSource.onmessage = function(event) {
                 </a>
                 <ul class="nav nav-treeview">
                     <li class="nav-item">
-                        <Link :href="route('lead.index')" class="nav-link ">
+                        <Link :href="route('lead.index')" :class="navActiveClass(route().current('lead.index'))">
                              <i class="nav-icon fas"></i><p>List</p>
                              <span class="badge badge-info right">{{ leadCount }}</span>
                         </Link>
                     </li>
                     <li class="nav-item">
-                        <Link :href="route('lead.create')" class="nav-link">
+                        <Link :href="route('lead.create')" :class="navActiveClass(route().current('lead.create') || route().current('lead.edit'))">
                              <i class="nav-icon fas"></i><p>New</p>
                         </Link>
                     </li>
                 </ul>
             </li>
-            <li class="nav-item menu-open">
+            <li :class="navMenuOpenClass(route().current('quotation.index') || route().current('quotation.create') || route().current('quotation.edit'))">
                 <a href="#" class="nav-link "> <i class="nav-icon fas fa-address-card"></i>
                     <p>Quotation
                 		<i class="fas fa-angle-left right"></i></p>
                 </a>
                 <ul class="nav nav-treeview">
                     <li class="nav-item">
-                        <Link :href="route('quotation.index')" class="nav-link ">
+                        <Link :href="route('quotation.index')" :class="navActiveClass(route().current('quotation.index'))">
                              <i class="nav-icon fas"></i><p>List</p>
                         </Link>
                     </li>
                     <li class="nav-item">
-                        <Link :href="route('quotation.create')" class="nav-link">
+                        <Link :href="route('quotation.create')" :class="navActiveClass(route().current('quotation.create') || route().current('quotation.edit'))">
                              <i class="nav-icon fas"></i><p>New</p>
                         </Link>
                     </li>
                 </ul>
             </li>
-            <li class="nav-item menu-open">
+            <li :class="navMenuOpenClass(route().current('invoice.index') || route().current('invoice.create') || route().current('invoice.edit'))">
                 <a href="#" class="nav-link "> <i class="nav-icon fas fa-address-card"></i>
                     <p>Invoice
                 		<i class="fas fa-angle-left right"></i></p>
                 </a>
                 <ul class="nav nav-treeview">
                     <li class="nav-item">
-                        <Link :href="route('invoice.index')" class="nav-link ">
+                        <Link :href="route('invoice.index')" :class="navActiveClass(route().current('invoice.index'))">
                              <i class="nav-icon fas"></i><p>List</p>
                         </Link>
                     </li>
                     <li class="nav-item">
-                        <Link :href="route('invoice.create')" class="nav-link">
+                        <Link :href="route('invoice.create')" :class="navActiveClass(route().current('invoice.create') || route().current('invoice.edit'))">
                              <i class="nav-icon fas"></i><p>New</p>
                         </Link>
                     </li>
                 </ul>
             </li>
-          	<li class="nav-item menu-open" v-if="isAdmin($page) || isOwner($page)">
+          	<li :class="navMenuOpenClass(route().current('user.index') || route().current('user.create') || route().current('user.edit'))" v-if="isAdmin($page) || isOwner($page)">
                 <a href="#" class="nav-link "> <i class="nav-icon fas fa-user"></i>
                     <p>Users
                 		<i class="fas fa-angle-left right"></i></p>
                 </a>
                 <ul class="nav nav-treeview">
                     <li class="nav-item">
-                        <Link :href="route('user.index')" class="nav-link ">
+                        <Link :href="route('user.index')" :class="navActiveClass(route().current('user.index'))">
                              <i class="nav-icon fas"></i><p>List</p>
                         </Link>
                     </li>
                     <li class="nav-item">
-                        <Link :href="route('user.create')" class="nav-link">
+                        <Link :href="route('user.create')" :class="navActiveClass(route().current('user.create') || route().current('user.edit'))">
                              <i class="nav-icon fas"></i><p>New</p>
                         </Link>
                     </li>
                 </ul>
             </li>
-            <li class="nav-item menu-open" v-if="isOwner($page)">
+            <li :class="navMenuOpenClass(route().current('team.index') || route().current('team.create') || route().current('team.edit'))" v-if="isOwner($page)">
                 <a href="#" class="nav-link "> <i class="nav-icon fas fa-user"></i>
                     <p>Team
                 		<i class="fas fa-angle-left right"></i></p>
                 </a>
                 <ul class="nav nav-treeview">
                     <li class="nav-item">
-                        <Link :href="route('team.index')" class="nav-link ">
+                        <Link :href="route('team.index')"  :class="navActiveClass(route().current('team.index'))">
                              <i class="nav-icon fas"></i><p>List</p>
                         </Link>
                     </li>
                     <li class="nav-item">
-                        <Link :href="route('team.create')" class="nav-link">
+                        <Link :href="route('team.create')" :class="navActiveClass(route().current('team.create') || route().current('team.edit'))">
                              <i class="nav-icon fas"></i><p>New</p>
                         </Link>
                     </li>
                 </ul>
             </li>
-            <li class="nav-item menu-open">
+            <li :class="navMenuOpenClass(route().current('customer.index') || route().current('customer.create') || route().current('customer.edit'))">
                 <a href="#" class="nav-link "> <i class="nav-icon fas fa-address-card"></i>
                     <p>Customer
                 		<i class="fas fa-angle-left right"></i></p>
                 </a>
                 <ul class="nav nav-treeview">
                     <li class="nav-item">
-                        <Link :href="route('customer.index')" class="nav-link ">
+                        <Link :href="route('customer.index')"  :class="navActiveClass(route().current('customer.index'))">
                              <i class="nav-icon fas"></i><p>List</p>
                         </Link>
                     </li>
                     <li class="nav-item">
-                        <Link :href="route('customer.create')" class="nav-link">
+                        <Link :href="route('customer.create')" :class="navActiveClass(route().current('customer.create') || route().current('customer.edit'))">
                              <i class="nav-icon fas"></i><p>New</p>
                         </Link>
                     </li>

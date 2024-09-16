@@ -73,10 +73,12 @@ class QuotationController extends Controller {
 		$quotation['taxes'] = $quotation->taxes;
 
 		// TODO: To be adjusted
-		$currency = me()->currentTeam()->getTeamPrimary();
+		// $currency = me()->currentTeam()->getTeamPrimary();
+		// $quotation['currency'] = $currency->iso3;
+		// $quotation['currency_symbol'] = $currency->symbol;
 
-		$quotation['currency'] = $currency->iso3;
-		$quotation['currency_symbol'] = $currency->symbol;
+		$quotation['currency'] = '';
+		$quotation['currency_symbol'] = '';
 
 		return Inertia::render("Quotation/Form", [
 			"form" => $quotation,

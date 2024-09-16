@@ -14,6 +14,12 @@ use App\Http\Controllers\TemplateServiceController;
 use App\Http\Controllers\QuotationController;
 use App\Http\Controllers\SharedController;
 use App\Http\Controllers\TeamController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\LocationController;
+use App\Http\Controllers\ProductServiceController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ProductServiceInOutController;
+use App\Http\Controllers\SupplierController;
 // use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -107,6 +113,12 @@ Route::prefix('_backend')->middleware(['auth', 'verified'])->group(function () {
 	Route::get('template/{id}/services', [TemplateServiceController::class, 'services'])->name('template.services.retrieve');
 
 	Route::post('estimate', [SharedController::class, 'estimate'])->name('shared.estimate');
+
+    Route::resources(['category' => CategoryController::class]);
+    Route::resources(['location' => LocationController::class]);
+    Route::resources(['productService' => ProductServiceController::class]);
+    Route::resources(['productServiceInOut' => ProductServiceInOutController::class]);
+    Route::resources(['supplier' => SupplierController::class]);
 });
 
 

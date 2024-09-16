@@ -90,10 +90,12 @@ class InvoiceController extends Controller
 		
 
 		// TODO: To be adjusted
-		$currency = me()->currentTeam()->getTeamPrimary();
+		// $currency = me()->currentTeam()->getTeamPrimary();
+		// $invoice['currency'] = $currency->iso3;
+		// $invoice['currency_symbol'] = $currency->symbol;
 
-		$invoice['currency'] = $currency->iso3;
-		$invoice['currency_symbol'] = $currency->symbol;
+		$invoice['currency'] = '';
+		$invoice['currency_symbol'] = '';
 
 		return Inertia::render("Invoice/Form", [
             "form" => $invoice,

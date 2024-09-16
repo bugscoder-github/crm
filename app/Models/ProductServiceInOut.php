@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ProductService extends Model
+class ProductServiceInOut extends Model
 {
     use HasFactory;
 
@@ -15,15 +15,18 @@ class ProductService extends Model
     public function __construct() {
         $this->attributes = [
             'id' => null,
-            'category_id' => null,
             'type' => null,
-            'name' => null
+            'product_service_id' => null,
+            'qty' => null,
+            'unitPrice' => null,
+            'supplier_id' => 0,
+            'location_id' => 0
         ];
 
         $this->fillable = array_keys($this->attributes);
     }
-    
-    public function category() {
-        return $this->belongsTo(Category::class);
+
+    public function ProductService() {
+        return $this->belongsTo(ProductService::class);
     }
 }

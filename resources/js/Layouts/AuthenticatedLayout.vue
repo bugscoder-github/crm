@@ -403,6 +403,24 @@ eventSource.onmessage = function(event) {
                     </li>
                 </ul>
             </li>
+            <li :class="navMenuOpenClass(route().current('productServiceInOut.index') || route().current('productServiceInOut.create') || route().current('productServiceInOut.edit'))">
+                <a href="#" class="nav-link "> <i class="nav-icon fas fa-address-card"></i>
+                    <p>Product/Service In/Out
+                		<i class="fas fa-angle-left right"></i></p>
+                </a>
+                <ul class="nav nav-treeview">
+                    <li class="nav-item">
+                        <Link :href="route('productServiceInOut.index')"  :class="navActiveClass(route().current('productServiceInOut.index'))">
+                             <i class="nav-icon fas"></i><p>List</p>
+                        </Link>
+                    </li>
+                    <li class="nav-item">
+                        <Link :href="route('productServiceInOut.create')" :class="navActiveClass(route().current('productServiceInOut.create') || route().current('productServiceInOut.edit'))">
+                             <i class="nav-icon fas"></i><p>New</p>
+                        </Link>
+                    </li>
+                </ul>
+            </li>
         </ul>
       </nav>
       <!-- /.sidebar-menu -->

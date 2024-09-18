@@ -23,7 +23,7 @@ class ProductServiceInOutRequest extends FormRequest
     {
         return [
             'type' => [],
-            'productServices_id' => [],
+            'product_service_id' => [],
             'qty' => [],
             'unitPrice' => []
         ];

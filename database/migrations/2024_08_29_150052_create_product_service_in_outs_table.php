@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('product_service_in_outs', function (Blueprint $table) {
             $table->id();
-            $table->integer('productServices_id');
+            $table->integer('product_service_id');
             $table->string('type');
             $table->float('unitPrice');
             $table->integer('qty');

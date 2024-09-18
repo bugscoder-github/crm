@@ -8,7 +8,7 @@
 
         <div class="card">
 			<div class="card-header">
-				<Link :href="route('product.create')" class="btn btn-primary">New</Link>
+				<Link :href="route('productService.create')" class="btn btn-primary">New</Link>
 			</div>
 			<div class="card-body table-responsive p-0">
 				<table class="table table-hover text-nowrap">
@@ -25,8 +25,8 @@
 							<td>{{ x.name }}</td>
                             <td>{{ x.type }}</td>
 							<td>
-								<Link :href="route('product.edit', x.id)">Edit</Link>&nbsp;
-								<Link class="del_btn" method="delete" as="button" onclick="return confirm('Are you sure?')" :href="route('product.destroy', x.id)">Delete</Link>
+								<Link :href="route('productService.edit', x.id)">Edit</Link>&nbsp;
+								<Link class="del_btn" method="delete" as="button" onclick="return confirm('Are you sure?')" :href="route('productService.destroy', x.id)">Delete</Link>
 							</td>
 						</tr>
 					</tbody>

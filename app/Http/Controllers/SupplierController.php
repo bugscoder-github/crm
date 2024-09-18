@@ -35,7 +35,8 @@ class SupplierController extends Controller
         if ($supplier == null) { $supplier = new Supplier(); }
 
         return Inertia::render('Supplier/Form', [
-            'form' => $supplier
+            'form' => $supplier,
+			'success' => session('success') ?? '',
         ]);
     }
 
@@ -53,22 +54,33 @@ class SupplierController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(SupplierRequest $request) {
-        $this->save($request);
+        $result = $this->save($request);
+
+        return $this->goto($result->id, 'Supplier created successfully.');
     }
 
     /**
      * Update the specified resource in storage.
      */
     public function update(SupplierRequest $request, Supplier $supplier) {
-        $this->save($request, $supplier);
+        $result = $this->save($request, $supplier);
+
+        return $this->goto($result->id, 'Supplier updated successfully.');
     }
 
     public function save(SupplierRequest $request, Supplier $supplier = null) {
         if ($supplier == null) { $supplier = new Supplier(); }
         $data = $request->validated();
 
-        $supplier->updateOrCreate(['id' => $supplier->id], $data);
+        return $supplier->updateOrCreate(['id' => $supplier->id], $data);
     }
+
+	public function goto($id, $msg = '') {
+		return redirect()
+				->route('supplier.edit', $id)
+				->withInput()
+				->with('success', $msg);
+	}
 
     //
 

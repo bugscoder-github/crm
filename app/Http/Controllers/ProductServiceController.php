@@ -37,7 +37,8 @@ class ProductServiceController extends Controller
 
         return Inertia::render('ProductService/Form', [
             'form' => $productService,
-            'category' => Category::getCategoryList()
+			'success' => session('success') ?? '',
+            'category' => Category::generateOptions()
         ]);
     }
 
@@ -55,22 +56,33 @@ class ProductServiceController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(ProductServiceRequest $request) {
-        $this->save($request);
+        $result = $this->save($request);
+
+        return $this->goto($result->id, 'Product/Servicce created successfully.');
     }
 
     /**
      * Update the specified resource in storage.
      */
     public function update(ProductServiceRequest $request, ProductService $productService) {
-        $this->save($request, $productService);
+        $result = $this->save($request, $productService);
+
+        return $this->goto($result->id, 'Product/Servicce updated successfully.');
     }
 
     public function save(ProductServiceRequest $request, ProductService $productService = null) {
         if ($productService == null) { $productService = new productService(); }
         $data = $request->validated();
 
-        $productService->updateOrCreate(['id' => $productService->id], $data);
+        return $productService->updateOrCreate(['id' => $productService->id], $data);
     }
+
+	public function goto($id, $msg = '') {
+		return redirect()
+				->route('productService.edit', $id)
+				->withInput()
+				->with('success', $msg);
+	}
 
     //
 

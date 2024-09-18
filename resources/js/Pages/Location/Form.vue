@@ -1,30 +1,43 @@
 <template>
-    <Head title="Dashboard" />
+    <Head title="Location" />
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Dashboard</h2>
+        	<template v-if="!props.form.id">New Location</template>
+        	<template v-else>
+        		Edit Location
+        	</template>
         </template>
+        <template #back>
+        	<a :href="route('location.index')">Location List</a>
+        </template>
+		<div class="alert alert-success alert-dismissible" v-if="props.success">
+			{{props.success}}
+			[ <a :href="route('location.index')">Go to location list</a> ]
+		</div>
+        <!-- {{ form }} -->
 
-        {{ form }}
-
-        <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    
-                    <form @submit.prevent="handleSubmit">
-                        Name: <input v-model="form.name">
-                        <span class="text-danger" v-if="form.errors.name" >{{ form.errors.name }}</span >
-                            <br><br>
-                        <button type="submit" class="btn btn-info">
-										<template v-if="!form.id">Create</template>
-										<template v-else>Update</template>
-									</button>
-                    </form>
-
-                </div>
-            </div>
-        </div>
+        <div class="card">
+			<div class="card-header">
+			</div>
+			<form @submit.prevent="handleSubmit">
+				<div class="card-body">
+					<div class="form-group row">
+						<label for="name" class="col-sm-2 col-form-label">Name</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="name" placeholder="Name" v-model="form.name">
+							<span class="text-danger" v-if="form.errors.name">{{ form.errors.name }}</span>
+						</div>
+					</div>
+				</div>
+				<div class="card-footer">
+					<button type="submit" class="btn btn-info">
+						<template v-if="!props.form.id">Create</template>
+						<template v-else>Update</template>
+					</button>
+				</div>
+			</form>
+		</div>
     </AuthenticatedLayout>
 </template>
 
@@ -33,7 +46,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { useForm, Head } from "@inertiajs/vue3";
 
 // const props = defineProps();
-const props = defineProps(['form']);
+const props = defineProps(['form', 'success']);
 const form = useForm({
     ...props['form']
 });

@@ -116,9 +116,9 @@ Route::prefix('_backend')->middleware(['auth', 'verified'])->group(function () {
 
     Route::resources(['category' => CategoryController::class]);
     Route::resources(['location' => LocationController::class]);
+    Route::resources(['supplier' => SupplierController::class]);
     Route::resources(['productService' => ProductServiceController::class]);
     Route::resources(['productServiceInOut' => ProductServiceInOutController::class]);
-    Route::resources(['supplier' => SupplierController::class]);
 });
 
 

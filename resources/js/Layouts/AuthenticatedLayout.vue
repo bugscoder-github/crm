@@ -330,6 +330,79 @@ eventSource.onmessage = function(event) {
                     </li>
                 </ul>
             </li>
+            <li class="nav-header">Product/Service</li>
+            <li :class="navMenuOpenClass(route().current('category.index') || route().current('category.create') || route().current('category.edit'))">
+                <a href="#" class="nav-link "> <i class="nav-icon fas fa-address-card"></i>
+                    <p>Category
+                		<i class="fas fa-angle-left right"></i></p>
+                </a>
+                <ul class="nav nav-treeview">
+                    <li class="nav-item">
+                        <Link :href="route('category.index')"  :class="navActiveClass(route().current('category.index'))">
+                             <i class="nav-icon fas"></i><p>List</p>
+                        </Link>
+                    </li>
+                    <li class="nav-item">
+                        <Link :href="route('category.create')" :class="navActiveClass(route().current('category.create') || route().current('category.edit'))">
+                             <i class="nav-icon fas"></i><p>New</p>
+                        </Link>
+                    </li>
+                </ul>
+            </li>
+            <li :class="navMenuOpenClass(route().current('supplier.index') || route().current('supplier.create') || route().current('supplier.edit'))">
+                <a href="#" class="nav-link "> <i class="nav-icon fas fa-address-card"></i>
+                    <p>Supplier
+                		<i class="fas fa-angle-left right"></i></p>
+                </a>
+                <ul class="nav nav-treeview">
+                    <li class="nav-item">
+                        <Link :href="route('supplier.index')"  :class="navActiveClass(route().current('supplier.index'))">
+                             <i class="nav-icon fas"></i><p>List</p>
+                        </Link>
+                    </li>
+                    <li class="nav-item">
+                        <Link :href="route('supplier.create')" :class="navActiveClass(route().current('supplier.create') || route().current('supplier.edit'))">
+                             <i class="nav-icon fas"></i><p>New</p>
+                        </Link>
+                    </li>
+                </ul>
+            </li>
+            <li :class="navMenuOpenClass(route().current('location.index') || route().current('location.create') || route().current('location.edit'))">
+                <a href="#" class="nav-link "> <i class="nav-icon fas fa-address-card"></i>
+                    <p>Location
+                		<i class="fas fa-angle-left right"></i></p>
+                </a>
+                <ul class="nav nav-treeview">
+                    <li class="nav-item">
+                        <Link :href="route('location.index')"  :class="navActiveClass(route().current('location.index'))">
+                             <i class="nav-icon fas"></i><p>List</p>
+                        </Link>
+                    </li>
+                    <li class="nav-item">
+                        <Link :href="route('location.create')" :class="navActiveClass(route().current('location.create') || route().current('location.edit'))">
+                             <i class="nav-icon fas"></i><p>New</p>
+                        </Link>
+                    </li>
+                </ul>
+            </li>
+            <li :class="navMenuOpenClass(route().current('productService.index') || route().current('productService.create') || route().current('productService.edit'))">
+                <a href="#" class="nav-link "> <i class="nav-icon fas fa-address-card"></i>
+                    <p>Product/Service
+                		<i class="fas fa-angle-left right"></i></p>
+                </a>
+                <ul class="nav nav-treeview">
+                    <li class="nav-item">
+                        <Link :href="route('productService.index')"  :class="navActiveClass(route().current('productService.index'))">
+                             <i class="nav-icon fas"></i><p>List</p>
+                        </Link>
+                    </li>
+                    <li class="nav-item">
+                        <Link :href="route('productService.create')" :class="navActiveClass(route().current('productService.create') || route().current('productService.edit'))">
+                             <i class="nav-icon fas"></i><p>New</p>
+                        </Link>
+                    </li>
+                </ul>
+            </li>
         </ul>
       </nav>
       <!-- /.sidebar-menu -->

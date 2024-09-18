@@ -13,7 +13,7 @@ class CategoryController extends Controller
      */
     public function index() {
         return Inertia::render('Category/Index', [
-            'result' => Category::getCategoryList()
+            'result' => Category::generateOptions()
         ]);
     }
 
@@ -34,11 +34,12 @@ class CategoryController extends Controller
     public function renderForm(Category $category = null) {
         if ($category == null) { $category = new Category(); }
 
-        $categories = Category::getCategoryList();
+        $categories = Category::generateOptions();
 
         return Inertia::render('Category/Form', [
            'form' => $category,
            'categories' => $categories,
+           'success' => session('success') ?? '',
         ]);
     }
 
@@ -54,22 +55,33 @@ class CategoryController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(CategoryRequest $request) {
-        $this->save($request);
+        $result = $this->save($request);
+
+        return $this->goto($result->id, 'User created successfully.');
     }
 
     /**
      * Update the specified resource in storage.
      */
     public function update(CategoryRequest $request, Category $category) {
-        $this->save($request, $category);
+        $result = $this->save($request, $category);
+
+        return $this->goto($result->id, 'User updated successfully.');
     }
 
     public function save(CategoryRequest $request, Category $category = null) {
         if ($category == null) { $category = new Category(); }
         $data = $request->validated();
 
-        $category->updateOrCreate(['id' => $category->id], $data);
+        return $category->updateOrCreate(['id' => $category->id], $data);
     }
+
+	public function goto($id, $msg = '') {
+		return redirect()
+				->route('category.edit', $id)
+				->withInput()
+				->with('success', $msg);
+	}
 
     /**
      * Remove the specified resource from storage.

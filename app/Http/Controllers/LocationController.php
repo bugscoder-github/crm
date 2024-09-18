@@ -35,7 +35,8 @@ class LocationController extends Controller
         if ($location == null) { $location = new Location(); }
 
         return Inertia::render('Location/Form', [
-            'form' => $location
+            'form' => $location,
+			'success' => session('success') ?? '',
         ]);
     }
 
@@ -53,22 +54,33 @@ class LocationController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(LocationRequest $request) {
-        $this->save($request);
+        $result = $this->save($request);
+
+        return $this->goto($result->id, 'Location created successfully.');
     }
 
     /**
      * Update the specified resource in storage.
      */
     public function update(LocationRequest $request, Location $location) {
-        $this->save($request, $location);
+        $result = $this->save($request, $location);
+
+        return $this->goto($result->id, 'Location updated successfully.');
     }
 
     public function save(LocationRequest $request, Location $location = null) {
         if ($location == null) { $location = new Location(); }
         $data = $request->validated();
 
-        $location->updateOrCreate(['id' => $location->id], $data);
+        return $location->updateOrCreate(['id' => $location->id], $data);
     }
+
+	public function goto($id, $msg = '') {
+		return redirect()
+				->route('location.edit', $id)
+				->withInput()
+				->with('success', $msg);
+	}
 
     ///
 
